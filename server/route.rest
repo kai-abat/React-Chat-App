@@ -1,0 +1,16 @@
+
+GET http://localhost:3010/
+
+###
+
+GET http://localhost:3010/api/users/register
+
+### 
+POST http://localhost:3010/api/users/register HTTP/1.1
+Content-Type: application/json 
+
+{
+    "name": "Xioa Qiao",
+    "email": "xiao@gmail.com",
+    "password": "React@1234"
+}
