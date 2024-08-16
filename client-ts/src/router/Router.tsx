@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Chat from "../pages/Chat";
 import NotFound from "../pages/NotFound";
 import Login from "../pages/Login";
-import LayoutMain from "./LayoutMain";
+import LayoutMain from "../components/LayoutMain";
 import Register from "../pages/Register";
 
 export const router = createBrowserRouter([

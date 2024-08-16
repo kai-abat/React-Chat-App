@@ -1,6 +1,7 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const {
@@ -9,7 +10,18 @@ const Register = () => {
     registerUser,
     registerError,
     isRegisterLoading,
+    user,
+    isLoading,
   } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      navigate("/");
+    }
+  }, [navigate, user, isLoading]);
+
+  
 
   return (
     <>

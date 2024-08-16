@@ -5,8 +5,18 @@ export interface RegisterFormType {
   confirmPassword: string;
 }
 
+export interface LoginFormType {
+  email: string;
+  password: string;
+}
+
 export interface RegisterUserBodyType {
   name: string;
+  email: string;
+  password: string;
+}
+
+export interface LoginUserBodyType {
   email: string;
   password: string;
 }

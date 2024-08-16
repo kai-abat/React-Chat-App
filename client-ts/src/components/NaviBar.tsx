@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const NaviBar = () => {
-  const { user } = useContext(AuthContext);
-  const name = user.name;
+  const { user, logout } = useContext(AuthContext);
   return (
     <Navbar
       bg="dark"
@@ -20,15 +19,39 @@ const NaviBar = () => {
             GCHAT
           </Link>
         </h2>
-        <span className="text-warning">Welcome, {name}</span>
+        {user && <span className="text-warning">Welcome, {user.name}</span>}
+        {!user && <span className="text-warning">Please login</span>}
+
         <Nav>
           <Stack direction="horizontal" gap={3}>
-            <Link to="/login" className="text-decoration-none link-light">
-              Login
+            <Link to="/about" className="text-decoration-none link-light">
+              About Us
             </Link>
-            <Link to="/register" className="text-decoration-none link-light">
-              Register
+            <Link to="/contact" className="text-decoration-none link-light">
+              Contact Us
             </Link>
+            {!user && (
+              <>
+                <Link to="/login" className="text-decoration-none link-light">
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="text-decoration-none link-light"
+                >
+                  Register
+                </Link>
+              </>
+            )}
+            {user && (
+              <Link
+                onClick={() => logout()}
+                to="/login"
+                className="text-decoration-none link-light"
+              >
+                Logout
+              </Link>
+            )}
           </Stack>
         </Nav>
       </Container>

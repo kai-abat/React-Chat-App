@@ -17,7 +17,7 @@ export const postRequest = async (
   body: string
 ): Promise<ResponseType> => {
   try {
-    const response = await fetch(`${url}/users/register`, {
+    const response = await fetch(`${url}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
