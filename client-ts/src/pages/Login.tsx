@@ -52,9 +52,11 @@ const Login = () => {
               <Button variant="primary" type="submit">
                 {isLoginLoading ? "Logging in..." : "Login"}
               </Button>
-              <Alert variant="danger">
-                <p>{loginError}</p>
-              </Alert>
+              {loginError && (
+                <Alert variant="danger">
+                  <p>{loginError}</p>
+                </Alert>
+              )}
             </Stack>
           </Col>
         </Row>

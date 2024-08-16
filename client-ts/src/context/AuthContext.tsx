@@ -15,6 +15,9 @@ import {
 } from "../types/UserTypes";
 import { baseUrl, postRequest } from "../utls/services";
 
+// admin@gmail.com
+// Admin@1234
+
 interface AuthContextType {
   user: UserInfoType | null;
   loginForm: LoginFormType;
@@ -54,8 +57,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [isRegisterLoading, setIsRegisterLoading] = useState<boolean>(false);
   const [loginForm, setLoginForm] = useState<LoginFormType>({
-    email: "",
-    password: "",
+    email: "admin@gmail.com",
+    password: "Admin@1234",
   });
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoginLoading, setIsLoginLoading] = useState<boolean>(false);
@@ -104,8 +107,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         JSON.stringify(body)
       );
 
-      console.log("registerUser response: " + response);
-
       setIsRegisterLoading(false);
 
       if (response.failure) {
@@ -127,7 +128,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const login = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-
+      setLoginError(null);
       setIsLoginLoading(true);
 
       const body: LoginUserBodyType = {
