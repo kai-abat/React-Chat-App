@@ -27,3 +27,4 @@ dist-ssr
 .env
 client-ts/src/pages/Chat2.tsx
 client-ts/src/router/nav.ts
+client-ts/src/context/ContextBoilder.tsx

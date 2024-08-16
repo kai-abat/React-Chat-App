@@ -132,9 +132,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       setIsLoginLoading(true);
 
       const body: LoginUserBodyType = {
-        email: registerForm.email,
-        password: registerForm.password,
+        email: loginForm.email,
+        password: loginForm.password,
       };
+      const bodyString = JSON.stringify(body);
+      console.log("Login:", bodyString);
 
       const response = await postRequest(
         `${baseUrl}/users/login`,
@@ -151,7 +153,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         console.log(response.success.user);
       }
     },
-    [registerForm]
+    [loginForm]
   );
 
   return (
