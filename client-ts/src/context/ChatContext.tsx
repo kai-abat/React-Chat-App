@@ -11,8 +11,15 @@ import {
   getAllUsersRequest,
   getAllChatRequest,
   postCreateChatRequest,
+  getAllMessageOfCurrentChatRequest,
+  postGenericRequest,
+  postSendTextMessageRequest,
 } from "../utls/services";
-import { ChatInfoType, CreateChatBodyType } from "../types/ChatTypes";
+import {
+  ChatInfoType,
+  CreateChatBodyType,
+  MessageInfoType,
+} from "../types/ChatTypes";
 
 interface ChatContextType {
   userChats: ChatInfoType[] | null;
@@ -20,6 +27,17 @@ interface ChatContextType {
   userChatsError: string | null;
   otherUsersChat: null | UserInfoType[];
   createChat: (firstId: string, secondId: string) => Promise<void>;
+  updateCurrentChat: (chat: ChatInfoType) => void;
+  messages: MessageInfoType[] | null;
+  isMessagesLoading: boolean;
+  messagesError: string | null;
+  currentChat: ChatInfoType | null;
+  sendTextMessage: (
+    textMessage: string,
+    sender: UserInfoType,
+    currentChatId: string,
+    setTextMessage: React.Dispatch<React.SetStateAction<string>>
+  ) => Promise<void>;
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -39,6 +57,15 @@ export const ChatContextProvider = ({
   const [otherUsersChat, setOtherUsersChat] = useState<null | UserInfoType[]>(
     null
   );
+  const [currentChat, setCurrentChat] = useState<ChatInfoType | null>(null);
+  // message state
+  const [messages, setMessages] = useState<MessageInfoType[] | null>(null);
+  const [isMessagesLoading, setIsMessagesLoading] = useState<boolean>(false);
+  const [messagesError, setMessagesError] = useState<string | null>(null);
+  const [sendTextMessageError, setSendTextMessageError] = useState<
+    string | null
+  >(null);
+  const [newMessage, setNewMessage] = useState<MessageInfoType | null>(null);
 
   // get all users
   useEffect(() => {
@@ -91,6 +118,78 @@ export const ChatContextProvider = ({
     getUserChats();
   }, [user]);
 
+  // get chat messages
+  useEffect(() => {
+    const getMessages = async () => {
+      if (currentChat) {
+        setIsMessagesLoading(true);
+        setMessagesError(null);
+
+        const response = await getAllMessageOfCurrentChatRequest(
+          `${baseUrl}/messages/${currentChat.id}`
+        );
+
+        setIsMessagesLoading(false);
+
+        if (response.failure) {
+          return setMessagesError(response.failure.message);
+        }
+
+        const sortedMessages = response.success.messages
+          .slice()
+          .sort((a, b) => {
+            const createdAt1 = Date.parse(a.createdAt);
+            const createdAt2 = Date.parse(b.createdAt);
+            return createdAt1 - createdAt2;
+          });
+        console.log("UseEffect Current Chat Messages:", sortedMessages);
+        setMessages(sortedMessages);
+      }
+    };
+    getMessages();
+  }, [currentChat]);
+
+  // send text message
+  const sendTextMessage = useCallback(
+    async (
+      textMessage: string,
+      sender: UserInfoType,
+      currentChatId: string,
+      setTextMessage: React.Dispatch<React.SetStateAction<string>>
+    ) => {
+      if (!textMessage) return;
+
+      console.log("textMessage", textMessage);
+      const response = await postSendTextMessageRequest(
+        `${baseUrl}/messages`,
+        JSON.stringify({
+          senderId: sender.id,
+          text: textMessage,
+          chatId: currentChatId,
+        })
+      );
+
+      if (response.failure) {
+        return setSendTextMessageError(response.failure.message);
+      }
+      setNewMessage(response.success.message);
+      setMessages((prev) => {
+        if (!prev) {
+          return (prev = [response.success.message]);
+        } else {
+          return [...prev, response.success.message];
+        }
+      });
+      setTextMessage("");
+    },
+    []
+  );
+
+  // selecting chat wiill show chat box
+  const updateCurrentChat = useCallback((chat: ChatInfoType) => {
+    setCurrentChat(chat);
+  }, []);
+
   // create chat to other users
   const createChat = useCallback(async (firstId: string, secondId: string) => {
     const body: CreateChatBodyType = {
@@ -124,6 +223,12 @@ export const ChatContextProvider = ({
         userChatsError,
         otherUsersChat,
         createChat,
+        updateCurrentChat,
+        messages,
+        isMessagesLoading,
+        messagesError,
+        currentChat,
+        sendTextMessage,
       }}
     >
       {children}

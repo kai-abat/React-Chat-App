@@ -3,8 +3,11 @@ import {
   AllUsersResponseType,
   ChatResponseType,
   ChatsResponseType,
+  MessagesResponseType,
+  GenericResponseType,
+  MessageResponseType,
 } from "../types/APIReturnTypes";
-import { ChatInfoType } from "../types/ChatTypes";
+import { ChatInfoType, MessageInfoType } from "../types/ChatTypes";
 import { UserInfoType } from "../types/UserTypes";
 import {
   getFetchRequest,
@@ -13,6 +16,30 @@ import {
 } from "./apiRequests";
 
 export const baseUrl: string = "http://localhost:3010/api";
+
+export const postGenericRequest = async (
+  url: string,
+  body: string
+): Promise<GenericResponseType> => {
+  try {
+    const { status, error } = await postFetchRequest(url, body);
+    if (!status && error) {
+      return { failure: { message: error } };
+    }
+
+    return { success: { message: "Successfuly executed" } };
+  } catch (error) {
+    let errMsg: string | undefined;
+    if (typeof error === "string") {
+      errMsg = error.toUpperCase();
+    } else if (error instanceof Error) {
+      errMsg = error.message;
+    }
+
+    console.log(error);
+    return { failure: { message: `Server Error: ${errMsg}` } };
+  }
+};
 
 export const postUserRequest = async (
   url: string,
@@ -143,6 +170,73 @@ export const getAllChatRequest = async (
     });
 
     return { success: { chats } };
+  } catch (error) {
+    let errMsg: string | undefined;
+    if (typeof error === "string") {
+      errMsg = error.toUpperCase();
+    } else if (error instanceof Error) {
+      errMsg = error.message;
+    }
+
+    console.log(error);
+    return { failure: { message: `Server Error: ${errMsg}` } };
+  }
+};
+
+export const getAllMessageOfCurrentChatRequest = async (
+  url: string
+): Promise<MessagesResponseType> => {
+  try {
+    const { status, data, error } = await getFetchRequest(url);
+    if (!status && error) {
+      return { failure: { message: error } };
+    }
+
+    const messages: MessageInfoType[] = data.map((m: any) => {
+      return {
+        id: m._id,
+        chatId: m.chatId,
+        senderId: m.senderId,
+        text: m.text,
+        createdAt: m.createdAt,
+        updateAt: m.updatedAt,
+      };
+    });
+
+    return { success: { messages } };
+  } catch (error) {
+    let errMsg: string | undefined;
+    if (typeof error === "string") {
+      errMsg = error.toUpperCase();
+    } else if (error instanceof Error) {
+      errMsg = error.message;
+    }
+
+    console.log(error);
+    return { failure: { message: `Server Error: ${errMsg}` } };
+  }
+};
+
+export const postSendTextMessageRequest = async (
+  url: string,
+  body: string
+): Promise<MessageResponseType> => {
+  try {
+    const { status, data, error } = await postFetchRequest(url, body);
+    if (!status && error) {
+      return { failure: { message: error } };
+    }
+
+    const message: MessageInfoType = {
+      id: data._id,
+      senderId: data.senderId,
+      chatId: data.chatId,
+      text: data.text,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    };
+
+    return { success: { message } };
   } catch (error) {
     let errMsg: string | undefined;
     if (typeof error === "string") {

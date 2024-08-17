@@ -4,11 +4,12 @@ import { Container } from "react-bootstrap";
 
 const LayoutMain = () => {
   return (
-    <main>
+    <main className="main-container">
       <NaviBar />
-      <Container>
+      <Container id="outlet-container" className="outlet-container">
         <Outlet />
       </Container>
+      <Container id="footer">This is the footer</Container>
     </main>
   );
 };

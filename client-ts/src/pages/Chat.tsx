@@ -4,17 +4,17 @@ import { ChatContext } from "../context/ChatContext";
 import UserChat from "../components/chat/UserChat";
 import { AuthContext } from "../context/AuthContext";
 import OtherUserChats from "../components/chat/OtherUserChats";
+import ChatBox from "../components/chat/ChatBox";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);
-  const { userChats, isUserChatsLoading, userChatsError } =
+  const { userChats, isUserChatsLoading, userChatsError, updateCurrentChat } =
     useContext(ChatContext);
 
   if (!user) return <p>No user is currently logged in!</p>;
 
-  console.log("USER CHATS:", userChats);
   return (
-    <Container>
+    <Container id="chat-container">
       <OtherUserChats />
       {!userChats || userChats.length < 1 ? null : (
         <Stack direction="horizontal" gap={4} className="align-items-start">
@@ -22,13 +22,13 @@ const Chat = () => {
             {isUserChatsLoading && <p>Loading chats...</p>}
             {userChats.map((chat, index) => {
               return (
-                <div key={index}>
+                <div key={index} onClick={() => updateCurrentChat(chat)}>
                   <UserChat chat={chat} user={user} />
                 </div>
               );
             })}
           </Stack>
-          <p>ChatBox</p>
+          <ChatBox />
         </Stack>
       )}
     </Container>

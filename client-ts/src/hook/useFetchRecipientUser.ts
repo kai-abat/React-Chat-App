@@ -4,16 +4,18 @@ import { UserInfoType } from "../types/UserTypes";
 import { baseUrl, getUserRequest } from "../utls/services";
 
 export const useFetchRecipientUser = (
-  chat: ChatInfoType,
-  user: UserInfoType
+  chat: ChatInfoType | null,
+  user: UserInfoType | null
 ) => {
   const [recipientUser, setRecipientUser] = useState<UserInfoType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const recipientId = chat?.members.find((m) => m !== user.id);
-
   useEffect(() => {
     const getUser = async () => {
+      if (!user || !chat) return null;
+
+      const recipientId = chat?.members.find((m) => m !== user.id);
+
       if (!recipientId) return null;
 
       const response = await getUserRequest(`${baseUrl}/users/${recipientId}`);
@@ -24,7 +26,9 @@ export const useFetchRecipientUser = (
       setRecipientUser(response.success.user);
     };
     getUser();
-  }, [recipientId]);
+  }, [chat, user]);
+
+  if (!user || !chat) return { recipientUser: null };
 
   return { recipientUser };
 };

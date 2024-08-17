@@ -1,5 +1,15 @@
-import { ChatInfoType } from "./ChatTypes";
+import { ChatInfoType, MessageInfoType } from "./ChatTypes";
 import { UserInfoType } from "./UserTypes";
+
+export type GenericResponseType =
+  | {
+      failure: { message: string };
+      success?: undefined;
+    }
+  | {
+      failure?: undefined;
+      success: { message: string };
+    };
 
 export type UserResponseType =
   | {
@@ -39,6 +49,26 @@ export type ChatsResponseType =
   | {
       failure?: undefined;
       success: { chats: ChatInfoType[] };
+    };
+
+export type MessageResponseType =
+  | {
+      failure: { message: string };
+      success?: undefined;
+    }
+  | {
+      failure?: undefined;
+      success: { message: MessageInfoType };
+    };
+
+export type MessagesResponseType =
+  | {
+      failure: { message: string };
+      success?: undefined;
+    }
+  | {
+      failure?: undefined;
+      success: { messages: MessageInfoType[] };
     };
 
 export interface GetFetchRequestReturnType {
