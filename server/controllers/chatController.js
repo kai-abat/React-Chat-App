@@ -43,11 +43,11 @@ const findChat = async (req, res) => {
   const { firstId, secondId } = req.params;
 
   try {
-    const userChats = await chatModel.findOne({
+    const userChat = await chatModel.findOne({
       members: { $all: [firstId, secondId] },
     });
 
-    res.status(200).json(userChats);
+    res.status(200).json(userChat);
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

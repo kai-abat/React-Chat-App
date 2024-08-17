@@ -4,3 +4,8 @@ export interface ChatInfoType {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CreateChatBodyType {
+  firstId: string;
+  secondId: string;
+}

@@ -3,6 +3,7 @@ import { Container, Stack } from "react-bootstrap";
 import { ChatContext } from "../context/ChatContext";
 import UserChat from "../components/chat/UserChat";
 import { AuthContext } from "../context/AuthContext";
+import OtherUserChats from "../components/chat/OtherUserChats";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);
@@ -14,6 +15,7 @@ const Chat = () => {
   console.log("USER CHATS:", userChats);
   return (
     <Container>
+      <OtherUserChats />
       {!userChats || userChats.length < 1 ? null : (
         <Stack direction="horizontal" gap={4} className="align-items-start">
           <Stack className="message-box flex-grow-0 pe-3" gap={3}>

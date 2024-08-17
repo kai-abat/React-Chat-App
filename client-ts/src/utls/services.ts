@@ -1,51 +1,27 @@
+import {
+  UserResponseType,
+  AllUsersResponseType,
+  ChatResponseType,
+  ChatsResponseType,
+} from "../types/APIReturnTypes";
 import { ChatInfoType } from "../types/ChatTypes";
 import { UserInfoType } from "../types/UserTypes";
+import {
+  getFetchRequest,
+  getCatchErrorMessage,
+  postFetchRequest,
+} from "./apiRequests";
 
 export const baseUrl: string = "http://localhost:3010/api";
 
-type UserResponseType =
-  | {
-      failure: { message: string };
-      success?: undefined;
-    }
-  | {
-      failure?: undefined;
-      success: { user: UserInfoType };
-    };
-
-type ChatResponseType =
-  | {
-      failure: { message: string };
-      success?: undefined;
-    }
-  | {
-      failure?: undefined;
-      success: { chats: ChatInfoType[] };
-    };
-
-export const postRequest = async (
+export const postUserRequest = async (
   url: string,
   body: string
 ): Promise<UserResponseType> => {
   try {
-    const response = await fetch(`${url}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body,
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      let message: string;
-      if (data?.message) {
-        message = data.message;
-      } else {
-        message = data;
-      }
-
-      return { failure: { message } };
+    const { status, data, error } = await postFetchRequest(url, body);
+    if (!status && error) {
+      return { failure: { message: error } };
     }
 
     const user: UserInfoType = {
@@ -72,18 +48,9 @@ export const getUserRequest = async (
   url: string
 ): Promise<UserResponseType> => {
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (!response.ok) {
-      let message: string;
-      if (data?.message) {
-        message = data.message;
-      } else {
-        message = data;
-      }
-
-      return { failure: { message } };
+    const { status, data, error } = await getFetchRequest(url);
+    if (!status && error) {
+      return { failure: { message: error } };
     }
 
     const user: UserInfoType = {
@@ -93,6 +60,57 @@ export const getUserRequest = async (
       token: data.token,
     };
     return { success: { user } };
+  } catch (error) {
+    const errMsg = getCatchErrorMessage(error);
+    console.log(error);
+    return { failure: { message: `Server Error: ${errMsg}` } };
+  }
+};
+
+export const getAllUsersRequest = async (
+  url: string
+): Promise<AllUsersResponseType> => {
+  try {
+    const { status, data, error } = await getFetchRequest(url);
+    if (!status && error) {
+      return { failure: { message: error } };
+    }
+
+    const users: UserInfoType[] = data.map((u: any) => {
+      return {
+        id: u._id,
+        name: u.name,
+        email: u.email,
+        token: u.token,
+      };
+    });
+
+    return { success: { users } };
+  } catch (error) {
+    const errMsg = getCatchErrorMessage(error);
+    console.log(error);
+    return { failure: { message: `Server Error: ${errMsg}` } };
+  }
+};
+
+export const postCreateChatRequest = async (
+  url: string,
+  body: string
+): Promise<ChatResponseType> => {
+  try {
+    const { status, data, error } = await postFetchRequest(url, body);
+    if (!status && error) {
+      return { failure: { message: error } };
+    }
+
+    const chat: ChatInfoType = {
+      id: data._id,
+      members: data.members.slice(),
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    };
+
+    return { success: { chat } };
   } catch (error) {
     let errMsg: string | undefined;
     if (typeof error === "string") {
@@ -106,25 +124,16 @@ export const getUserRequest = async (
   }
 };
 
-export const getChatRequest = async (
+export const getAllChatRequest = async (
   url: string
-): Promise<ChatResponseType> => {
+): Promise<ChatsResponseType> => {
   try {
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (!response.ok) {
-      let message: string;
-      if (data?.message) {
-        message = data.message;
-      } else {
-        message = data;
-      }
-
-      return { failure: { message } };
+    const { status, data, error } = await getFetchRequest(url);
+    if (!status && error) {
+      return { failure: { message: error } };
     }
 
-    const chats: ChatInfoType[] = data.map((c) => {
+    const chats: ChatInfoType[] = data.map((c: any) => {
       return {
         id: c._id,
         members: c.members.slice(),

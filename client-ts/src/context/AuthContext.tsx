@@ -13,7 +13,7 @@ import {
   RegisterUserBodyType,
   UserInfoType,
 } from "../types/UserTypes";
-import { baseUrl, postRequest } from "../utls/services";
+import { baseUrl, postUserRequest } from "../utls/services";
 
 // admin@gmail.com
 // Admin@1234
@@ -102,7 +102,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         password: registerForm.password,
       };
 
-      const response = await postRequest(
+      const response = await postUserRequest(
         `${baseUrl}/users/register`,
         JSON.stringify(body)
       );
@@ -138,7 +138,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       const bodyString = JSON.stringify(body);
       console.log("Login:", bodyString);
 
-      const response = await postRequest(
+      const response = await postUserRequest(
         `${baseUrl}/users/login`,
         JSON.stringify(body)
       );
