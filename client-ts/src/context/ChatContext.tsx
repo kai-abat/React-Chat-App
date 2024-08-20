@@ -28,7 +28,7 @@ interface ChatContextType {
   userChatsError: string | null;
   otherUsersChat: null | UserInfoType[];
   createChat: (firstId: string, secondId: string) => Promise<void>;
-  updateCurrentChat: (chat: ChatInfoType) => void;
+  updateCurrentChat: (chat: ChatInfoType | null) => void;
   messages: MessageInfoType[] | null;
   isMessagesLoading: boolean;
   messagesError: string | null;
@@ -177,7 +177,7 @@ export const ChatContextProvider = ({
     getUsers();
   }, [user, userChats]);
 
-  // get chats
+  // get user chats
   useEffect(() => {
     const getUserChats = async () => {
       if (!user) {
@@ -195,7 +195,64 @@ export const ChatContextProvider = ({
           return setUserChatsError(response.failure.message);
         }
 
-        setUserChats(response.success.chats);
+        // SORTING THE USER CHAT BASE FROM LATEST MESSAGE OF RECEPIENT
+        // Get the latest notification of each recipient and insert it to new aray
+        const latestNotifications = notifications.reduce((acc, curr) => {
+          const prev = acc.find((a) => a.senderId === curr.senderId);
+          if (!prev || curr.date > prev.date) {
+            acc.push(curr);
+          }
+          return acc;
+        }, [] as NotificationType[]);
+
+        // loop to each user chat
+        const sortedUserChat = response.success.chats.sort((chat1, chat2) => {
+          // get the recepient from members
+          const recepient1 = chat1.members.find((m) => m !== user.id);
+          const recepient2 = chat2.members.find((m) => m !== user.id);
+
+          console.log("chats sort recep1: " + recepient1);
+          console.log("chats sort recep2: " + recepient2);
+
+          // get the notification of each recepient
+          let notification1: NotificationType | undefined;
+          let notification2: NotificationType | undefined;
+          if (recepient1) {
+            notification1 = latestNotifications.find(
+              (n) => n.senderId === recepient1
+            );
+          }
+
+          if (recepient2) {
+            notification2 = latestNotifications.find(
+              (n) => n.senderId === recepient2
+            );
+          }
+
+          if (!notification1) {
+            return 1;
+          }
+          if (!notification2) {
+            return -1;
+          }
+
+          if (notification1 && notification2) {
+            if (notification1.date < notification2.date) return 1;
+            if (notification1.date > notification2.date) return -1;
+          }
+
+          return 0;
+
+          // compare the notification date
+        });
+
+        console.log("getUserChats: user:", user.name, user.id);
+        console.log("getUserChats: notifications:", notifications);
+        console.log("getUserChats: latestNotifications:", latestNotifications);
+        console.log("getUserChats: userChats:", response.success.chats);
+        console.log("getUserChats: sortedUserChat:", sortedUserChat);
+
+        setUserChats(sortedUserChat);
       }
     };
     getUserChats();
@@ -267,7 +324,7 @@ export const ChatContextProvider = ({
   );
 
   // selecting chat wiill show chat box
-  const updateCurrentChat = useCallback((chat: ChatInfoType) => {
+  const updateCurrentChat = useCallback((chat: ChatInfoType | null) => {
     setCurrentChat(chat);
   }, []);
 

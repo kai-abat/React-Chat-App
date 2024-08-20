@@ -8,7 +8,7 @@ import ChatBox from "../components/chat/ChatBox";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);
-  const { userChats, isUserChatsLoading, userChatsError } =
+  const { userChats, isUserChatsLoading, userChatsError, notifications } =
     useContext(ChatContext);
 
   if (!user) return <p>No user is currently logged in!</p>;

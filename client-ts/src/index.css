@@ -91,9 +91,14 @@ body {
 .chat-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0.75rem;
   background: rgb(30, 30, 30);
+}
+
+.chat-close {
+  cursor: pointer;
+  color: rgb(188, 29, 29);
 }
 
 /* Messages */

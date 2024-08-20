@@ -35,8 +35,6 @@ const UserChat = ({
 
   const numberOfNotification = recipientNotification.length;
 
-  // const latestNotification = recipientNotification[0];
-
   const handleClickChat = () => {
     updateCurrentChat(chat);
     if (recipientUser) {
