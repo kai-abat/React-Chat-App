@@ -1,3 +1,5 @@
+import { UserInfoType } from "./UserTypes";
+
 export interface ChatInfoType {
   id: string;
   members: string[];
@@ -17,4 +19,14 @@ export interface MessageInfoType {
   text: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface NotificationType {
+  senderId: string;
+  isRead: boolean;
+  date: Date;
+}
+
+export interface UserNotificationType extends NotificationType {
+  user: UserInfoType;
 }

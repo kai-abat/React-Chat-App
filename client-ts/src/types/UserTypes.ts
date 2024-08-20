@@ -27,3 +27,8 @@ export interface UserInfoType {
   email: string;
   token: string;
 }
+
+export interface OnlineUsersType {
+  userId: string;
+  socketId: string;
+}

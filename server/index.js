@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, (req, res) => {
-  console.log("Server running on port " + port);
+  console.log("Running in local: http://localhost:" + port);
 });
 
 mongoose

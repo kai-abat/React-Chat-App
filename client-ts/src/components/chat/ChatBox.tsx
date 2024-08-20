@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { Button, Stack } from "react-bootstrap";
+import { Stack } from "react-bootstrap";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 
@@ -14,14 +14,23 @@ const ChatBox = () => {
     isMessagesLoading,
     messagesError,
     sendTextMessage,
+    notifications,
   } = useContext(ChatContext);
-
-  console.log("ChatBox user and chat", user, currentChat);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
-  if (!user || !currentChat) return;
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
-  console.log("ChatBox Text:", textMessage);
+  useEffect(() => {
+    // if (!currentChat) return;
+    // const scrollToBottom = () => {
+    //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // };
+    // console.log("executing scrollToBottom...");
+    // scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, currentChat, notifications]);
+
+  if (!user || !currentChat) return;
 
   // this message should display if
   // no selected user to chat or if we close the chatbox
@@ -48,6 +57,7 @@ const ChatBox = () => {
           messages.map((message, index) => {
             return (
               <Stack
+                ref={messagesEndRef}
                 key={index}
                 className={`${
                   message.senderId === user.id
@@ -62,6 +72,7 @@ const ChatBox = () => {
               </Stack>
             );
           })}
+        {/* <div ref={messagesEndRef} /> */}
       </Stack>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
         <InputEmoji

@@ -2,9 +2,10 @@ import { useContext } from "react";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
 
+// Other user that has no chat history
 const OtherUserChats = () => {
   const { user } = useContext(AuthContext);
-  const { otherUsersChat, createChat } = useContext(ChatContext);
+  const { otherUsersChat, createChat, onlineUsers } = useContext(ChatContext);
 
   if (!user) return;
 
@@ -20,7 +21,13 @@ const OtherUserChats = () => {
                 onClick={() => createChat(user.id, u.id)}
               >
                 {u.name}
-                <span className="user-online"></span>
+                <span
+                  className={`${
+                    onlineUsers.some((olUser) => olUser.userId === u.id)
+                      ? "user-online"
+                      : ""
+                  }`}
+                ></span>
               </div>
             );
           })}

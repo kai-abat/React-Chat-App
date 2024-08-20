@@ -5,21 +5,22 @@ import {
   useEffect,
   useState,
 } from "react";
-import { UserInfoType } from "../types/UserTypes";
-import {
-  baseUrl,
-  getAllUsersRequest,
-  getAllChatRequest,
-  postCreateChatRequest,
-  getAllMessageOfCurrentChatRequest,
-  postGenericRequest,
-  postSendTextMessageRequest,
-} from "../utls/services";
+import { io, Socket } from "socket.io-client";
 import {
   ChatInfoType,
   CreateChatBodyType,
   MessageInfoType,
+  NotificationType,
 } from "../types/ChatTypes";
+import { OnlineUsersType, UserInfoType } from "../types/UserTypes";
+import {
+  baseUrl,
+  getAllChatRequest,
+  getAllMessageOfCurrentChatRequest,
+  getAllUsersRequest,
+  postCreateChatRequest,
+  postSendTextMessageRequest,
+} from "../utls/services";
 
 interface ChatContextType {
   userChats: ChatInfoType[] | null;
@@ -38,6 +39,13 @@ interface ChatContextType {
     currentChatId: string,
     setTextMessage: React.Dispatch<React.SetStateAction<string>>
   ) => Promise<void>;
+  onlineUsers: OnlineUsersType[];
+  notifications: NotificationType[];
+  allUsers: UserInfoType[];
+  updateNotification: (senderId: string, isRead: boolean) => void;
+  markAllNotification: (isRead: boolean) => void;
+  markAsReadThisNotification: (recipientUser: UserInfoType) => void;
+  newMessage: MessageInfoType | null;
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -66,6 +74,80 @@ export const ChatContextProvider = ({
     string | null
   >(null);
   const [newMessage, setNewMessage] = useState<MessageInfoType | null>(null);
+  const [socket, setSocket] = useState<Socket<any> | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<OnlineUsersType[]>([]);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
+  const [allUsers, setAllUsers] = useState<UserInfoType[]>([]);
+
+  // initialize socket
+  useEffect(() => {
+    if (!user) return;
+    const newSocket = io("http://localhost:3020");
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  // Add online user from socket
+  useEffect(() => {
+    if (socket === null || user === null) return;
+    socket.emit("addNewUser", user.id);
+
+    socket.on("getOnlineUsers", (res: OnlineUsersType[]) => {
+      setOnlineUsers(res);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket, user]);
+
+  // send message to the server using socket
+  useEffect(() => {
+    if (socket === null || user === null || currentChat === null) return;
+
+    const recipientId = currentChat.members.find((m) => m !== user.id);
+
+    socket.emit("sendMessage", { ...newMessage, recipientId: recipientId });
+  }, [newMessage, socket, user, currentChat]);
+
+  // recieving the message
+  useEffect(() => {
+    if (socket === null || currentChat === null) return;
+    socket.on("getMessage", (res: MessageInfoType) => {
+      if (currentChat.id !== res.chatId) return;
+
+      setMessages((prev) => {
+        if (!prev) return [res];
+        return [...prev, res];
+      });
+    });
+
+    return () => {
+      socket.off("getMessage");
+    };
+  }, [socket, currentChat]);
+
+  // get notifications
+  useEffect(() => {
+    if (socket === null) return;
+
+    socket.on("getNotification", (res: NotificationType) => {
+      const isChatOpen = currentChat?.members.find((m) => m === res.senderId);
+
+      if (isChatOpen) {
+        setNotifications((prev) => [{ ...res, isRead: true }, ...prev]);
+      } else {
+        setNotifications((prev) => [res, ...prev]);
+      }
+    });
+
+    return () => {
+      socket.off("getNotification");
+    };
+  }, [socket, currentChat]);
 
   // get all users
   useEffect(() => {
@@ -75,6 +157,8 @@ export const ChatContextProvider = ({
       if (response.failure) {
         return console.log("No users found!");
       }
+
+      setAllUsers(response.success.users);
 
       const pChats = response.success.users.filter((u) => {
         let isChatCreated = false;
@@ -111,12 +195,11 @@ export const ChatContextProvider = ({
           return setUserChatsError(response.failure.message);
         }
 
-        console.log("UseEffect SET Chat:", response.success.chats);
         setUserChats(response.success.chats);
       }
     };
     getUserChats();
-  }, [user]);
+  }, [user, notifications]);
 
   // get chat messages
   useEffect(() => {
@@ -142,7 +225,6 @@ export const ChatContextProvider = ({
             const createdAt2 = Date.parse(b.createdAt);
             return createdAt1 - createdAt2;
           });
-        console.log("UseEffect Current Chat Messages:", sortedMessages);
         setMessages(sortedMessages);
       }
     };
@@ -159,7 +241,6 @@ export const ChatContextProvider = ({
     ) => {
       if (!textMessage) return;
 
-      console.log("textMessage", textMessage);
       const response = await postSendTextMessageRequest(
         `${baseUrl}/messages`,
         JSON.stringify({
@@ -190,6 +271,22 @@ export const ChatContextProvider = ({
     setCurrentChat(chat);
   }, []);
 
+  // upate the notification
+  const markAsReadThisNotification = useCallback(
+    (recipientUser: UserInfoType) => {
+      const senderId = recipientUser.id;
+      setNotifications((prev) => {
+        return prev.map((n) => {
+          if (n.senderId === senderId) {
+            return { ...n, isRead: true };
+          }
+          return n;
+        });
+      });
+    },
+    []
+  );
+
   // create chat to other users
   const createChat = useCallback(async (firstId: string, secondId: string) => {
     const body: CreateChatBodyType = {
@@ -215,6 +312,31 @@ export const ChatContextProvider = ({
     });
   }, []);
 
+  const updateNotification = useCallback(
+    (senderId: string, isRead: boolean) => {
+      const updatedNotification = notifications.map((n) => {
+        if (n.senderId === senderId) {
+          return { ...n, isRead: isRead };
+        }
+        return n;
+      });
+
+      setNotifications(updatedNotification);
+    },
+    [notifications]
+  );
+
+  const markAllNotification = useCallback(
+    (isRead: boolean) => {
+      const markNotif = notifications.map((n) => {
+        if (!n.isRead) return { ...n, isRead: isRead };
+        return n;
+      });
+      setNotifications(markNotif);
+    },
+    [notifications]
+  );
+
   return (
     <ChatContext.Provider
       value={{
@@ -229,6 +351,13 @@ export const ChatContextProvider = ({
         messagesError,
         currentChat,
         sendTextMessage,
+        onlineUsers,
+        notifications,
+        allUsers,
+        updateNotification,
+        markAllNotification,
+        markAsReadThisNotification,
+        newMessage,
       }}
     >
       {children}
