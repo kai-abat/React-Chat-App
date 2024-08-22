@@ -1,13 +1,10 @@
 import { useContext, useState } from "react";
 import { ChatContext } from "../../context/ChatContext";
-import { AuthContext } from "../../context/AuthContext";
 import { unreadNotificationsFunc } from "../../utls/unreadNotification";
-import { UserInfoType } from "../../types/UserTypes";
 import { UserNotificationType } from "../../types/ChatTypes";
 import moment from "moment";
 
 const Notification = () => {
-  const { user } = useContext(AuthContext);
   const {
     notifications,
     userChats,

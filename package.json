@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon server/index.js",
     "start": "node server/index.js",
-    "build": "npm install && npm install client-ts && npm run build --prefix client-ts"
+    "build": "npm install && npm install client-ts && tsc -b && vite build",
+    "client-build": "tsc -b && vite build"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +18,11 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
-    "validator": "^13.12.0",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.2"
   }
 }

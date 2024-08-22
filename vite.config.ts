@@ -4,9 +4,10 @@ import react from "@vitejs/plugin-react";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  root: ".",
+  root: "./client-ts",
   build: {
-    outDir: "./dist2",
+    manifest: true,
+    outDir: "./dist",
     emptyOutDir: true,
   },
 });

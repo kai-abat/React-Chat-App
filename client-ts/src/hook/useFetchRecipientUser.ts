@@ -30,5 +30,5 @@ export const useFetchRecipientUser = (
 
   if (!user || !chat) return { recipientUser: null };
 
-  return { recipientUser };
+  return { recipientUser, error };
 };

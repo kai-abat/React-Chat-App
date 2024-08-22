@@ -46,6 +46,7 @@ interface ChatContextType {
   markAllNotification: (isRead: boolean) => void;
   markAsReadThisNotification: (recipientUser: UserInfoType) => void;
   newMessage: MessageInfoType | null;
+  sendTextMessageError: string | null;
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -417,6 +418,7 @@ export const ChatContextProvider = ({
         markAllNotification,
         markAsReadThisNotification,
         newMessage,
+        sendTextMessageError,
       }}
     >
       {children}

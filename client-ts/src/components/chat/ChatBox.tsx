@@ -12,7 +12,6 @@ const ChatBox = () => {
     currentChat,
     messages,
     isMessagesLoading,
-    messagesError,
     sendTextMessage,
     notifications,
     updateCurrentChat,
