@@ -6,15 +6,15 @@
   "scripts": {
     "dev": "nodemon server/index.js",
     "start": "node server/index.js",
-    "build": "npm install && npm install client-ts && tsc -b && vite build",
-    "client-build": "tsc -b && vite build"
+    "build": "npm install && npm install ./client-ts && tsc -b && vite build --base=./client-ts",
+    "client-build": "tsc -b && vite build --base=./client-ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "bcrypt": "^5.1.1",
-    "client-ts": "^1.0.0",
+    "client-ts": "file:client-ts",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
