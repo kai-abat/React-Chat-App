@@ -1,11 +1,12 @@
 {
-  "name": "server",
+  "name": "react-chat-socket",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server"
+    "dev": "nodemon server/index.js",
+    "start": "node server/index.js",
+    "build": "npm install && npm install client-ts && npm run build --prefix client-ts"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
-    "validator": "^13.12.0"
+    "validator": "^13.12.0",
+    "socket.io": "^4.7.5"
   }
 }

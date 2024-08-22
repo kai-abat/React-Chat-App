@@ -1,3 +1,4 @@
+import { ENDPOINT } from "../context/ChatContext";
 import {
   UserResponseType,
   AllUsersResponseType,
@@ -15,7 +16,7 @@ import {
   postFetchRequest,
 } from "./apiRequests";
 
-export const baseUrl: string = "http://localhost:3010/api";
+export const baseUrl: string = `${ENDPOINT}/api`;
 
 export const postGenericRequest = async (
   url: string,

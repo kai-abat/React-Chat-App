@@ -52,6 +52,8 @@ export const ChatContext = createContext<ChatContextType>(
   {} as ChatContextType
 );
 
+export const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+
 export const ChatContextProvider = ({
   children,
   user,
@@ -82,7 +84,7 @@ export const ChatContextProvider = ({
   // initialize socket
   useEffect(() => {
     if (!user) return;
-    const newSocket = io("http://localhost:3020");
+    const newSocket = io(ENDPOINT);
     setSocket(newSocket);
 
     return () => {
