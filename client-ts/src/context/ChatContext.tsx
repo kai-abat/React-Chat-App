@@ -53,7 +53,9 @@ export const ChatContext = createContext<ChatContextType>(
   {} as ChatContextType
 );
 
-export const ENDPOINT = "http://localhost:5000"; // "https://talk-a-tive.herokuapp.com"; -> After deployment
+// export const ENDPOINT = "http://localhost:5000"; // "https://react-chat-app-mlce.onrender.com"; -> After deployment
+
+export const ENDPOINT = "https://react-chat-app-mlce.onrender.com";
 
 export const ChatContextProvider = ({
   children,
