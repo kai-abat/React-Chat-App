@@ -9,7 +9,7 @@ const LayoutMain = () => {
       <Container id="outlet-container" className="outlet-container">
         <Outlet />
       </Container>
-      <Container id="footer">This is the footer</Container>
+      {/* <Container id="footer">This is the footer</Container> */}
     </main>
   );
 };

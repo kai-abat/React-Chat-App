@@ -1,20 +1,24 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import ChatBox from "./ChatBox";
+import Modal from "react-bootstrap/Modal";
 import { ChatContext } from "../../context/ChatContext";
+import { AuthContext } from "../../context/AuthContext";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 import { Stack } from "react-bootstrap";
+import InputEmojiWithRef from "react-input-emoji";
 import moment from "moment";
-import InputEmoji from "react-input-emoji";
 
-const ChatBox = () => {
+const ModalChatBox = () => {
   const { user } = useContext(AuthContext);
   const {
     currentChat,
     messages,
-    isMessagesLoading,
+    isShowChatBox,
+    updateCurrentChat,
+    onShowChatBox,
+    onCloseChatBox,
     sendTextMessage,
     notifications,
-    updateCurrentChat,
   } = useContext(ChatContext);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
@@ -31,69 +35,53 @@ const ChatBox = () => {
     }
   }, [inputRef]);
 
-  if (!user || !currentChat) return;
+  useEffect(() => {
+    if (!currentChat) return onCloseChatBox();
+    onShowChatBox();
+  }, [currentChat, onCloseChatBox, onShowChatBox]);
 
-  // this message should display if
-  // no selected user to chat or if we close the chatbox
-  if (!recipientUser) {
-    return (
-      <p style={{ textAlign: "center", width: "100%" }}>
-        No conversion selected yet...
-      </p>
-    );
-  }
-  if (isMessagesLoading) {
-    return (
-      <p style={{ textAlign: "center", width: "100%" }}>Loading Chat...</p>
-    );
-  }
+  if (!user || !currentChat) return;
 
   const handleEnterKeyPress = (currentText: string) => {
     sendTextMessage(currentText, user, currentChat?.id, setTextMessage);
   };
 
   return (
-    <Stack gap={4} className="chat-box">
-      <div className="chat-header">
-        <strong>{recipientUser.name}</strong>
-        {/* close chat-box */}
-        <strong className="chat-close" onClick={() => updateCurrentChat(null)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-x-lg"
-            viewBox="0 0 16 16"
-          >
-            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-          </svg>
-        </strong>
-      </div>
-      <Stack gap={3} className="messages">
-        {messages &&
-          messages.map((message, index) => {
-            return (
-              <Stack
-                ref={messagesEndRef}
-                key={index}
-                className={`${
-                  message.senderId === user.id
-                    ? "message self align-self-end flex-grow-0"
-                    : "message align-self-start flex-grow-0"
-                }`}
-              >
-                <span>{message.text}</span>
-                <span className="message-footer">
-                  {moment(message.createdAt).calendar()}
-                </span>
-              </Stack>
-            );
-          })}
-        {/* <div ref={messagesEndRef} /> */}
-      </Stack>
+    <Modal
+      contentClassName="modal-chat-box"
+      show={isShowChatBox}
+      onHide={() => updateCurrentChat(null)}
+      fullscreen="lg-down"
+    >
+      <Modal.Header closeButton closeVariant="white">
+        <Modal.Title>{recipientUser?.name}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Stack gap={3} className="modal-body-messages">
+          {messages &&
+            messages.map((message, index) => {
+              return (
+                <Stack
+                  ref={messagesEndRef}
+                  key={index}
+                  className={`${
+                    message.senderId === user.id
+                      ? "message self align-self-end flex-grow-0"
+                      : "message align-self-start flex-grow-0"
+                  }`}
+                >
+                  <span>{message.text}</span>
+                  <span className="message-footer">
+                    {moment(message.createdAt).calendar()}
+                  </span>
+                </Stack>
+              );
+            })}
+          {/* <div ref={messagesEndRef} /> */}
+        </Stack>
+      </Modal.Body>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
-        <InputEmoji
+        <InputEmojiWithRef
           value={textMessage}
           onChange={setTextMessage}
           fontFamily="nunito"
@@ -122,7 +110,7 @@ const ChatBox = () => {
           </svg>
         </button>
       </Stack>
-    </Stack>
+    </Modal>
   );
 };
-export default ChatBox;
+export default ModalChatBox;

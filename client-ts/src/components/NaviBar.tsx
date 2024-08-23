@@ -20,11 +20,7 @@ const NaviBar = () => {
             GCHAT
           </Link>
         </h2>
-        {user && (
-          <span className="text-warning">
-            Welcome, {user.name}. ID: {user.id}
-          </span>
-        )}
+        {user && <span className="text-warning">Welcome, {user.name}.</span>}
         {!user && <span className="text-warning">Please login</span>}
 
         <Nav>

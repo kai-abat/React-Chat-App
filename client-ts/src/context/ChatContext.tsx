@@ -47,15 +47,17 @@ interface ChatContextType {
   markAsReadThisNotification: (recipientUser: UserInfoType) => void;
   newMessage: MessageInfoType | null;
   sendTextMessageError: string | null;
+  isShowChatBox: boolean;
+  onShowChatBox: () => void;
+  onCloseChatBox: () => void;
 }
 
 export const ChatContext = createContext<ChatContextType>(
   {} as ChatContextType
 );
 
-// export const ENDPOINT = "http://localhost:5000"; // "https://react-chat-app-mlce.onrender.com"; -> After deployment
-
-export const ENDPOINT = "https://react-chat-app-mlce.onrender.com";
+export const ENDPOINT = "http://localhost:5000";
+// export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; -> After deployment
 
 export const ChatContextProvider = ({
   children,
@@ -83,6 +85,7 @@ export const ChatContextProvider = ({
   const [onlineUsers, setOnlineUsers] = useState<OnlineUsersType[]>([]);
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [allUsers, setAllUsers] = useState<UserInfoType[]>([]);
+  const [isShowChatBox, setIsShowChatBox] = useState<boolean>(false);
 
   // initialize socket
   useEffect(() => {
@@ -399,6 +402,13 @@ export const ChatContextProvider = ({
     [notifications]
   );
 
+  const onShowChatBox = useCallback(() => {
+    setIsShowChatBox(true);
+  }, []);
+  const onCloseChatBox = useCallback(() => {
+    setIsShowChatBox(false);
+  }, []);
+
   return (
     <ChatContext.Provider
       value={{
@@ -421,6 +431,9 @@ export const ChatContextProvider = ({
         markAsReadThisNotification,
         newMessage,
         sendTextMessageError,
+        isShowChatBox,
+        onShowChatBox,
+        onCloseChatBox,
       }}
     >
       {children}
