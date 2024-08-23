@@ -33,7 +33,7 @@ body {
 }
 
 .single-user {
-  background: rgb(0, 213, 255);
+  background: #0d94f5;
   cursor: pointer;
   padding: 5px 7px;
   border-radius: 10px;
@@ -156,7 +156,7 @@ body {
 
 .modal-body-messages .self,
 .message.self {
-  background: #00bd9b;
+  background: #0d94f5;
 }
 
 .modal-body-messages .message-footer,
@@ -244,7 +244,7 @@ body {
 
 .notification-count {
   display: flex;
-  background: #00bd9b;
+  background: #0d94f5;
   height: 25px;
   width: 25px;
   font-size: 14px;
@@ -259,7 +259,7 @@ body {
 
 .this-user-notifications {
   display: flex;
-  background: #00bd9b;
+  background: #0d94f5;
   height: 20px;
   width: 20px;
   font-size: 12px;
