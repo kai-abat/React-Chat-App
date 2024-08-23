@@ -33,10 +33,14 @@ const registerUser = async (req, res) => {
     }
 
     user = new userModel({ name, email, password });
+
+    // hash the password using bcrypt
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
+
     await user.save();
 
+    // generate jwt token
     const token = createToken(user._id);
 
     res.status(200).json({ _id: user._id, name, email, token });
@@ -94,9 +98,31 @@ const getUsers = async (req, res) => {
   }
 };
 
+const searchUsers = async (req, res) => {
+  try {
+    const keyword = req.query.keyword
+      ? {
+          $or: [
+            { name: { $regex: req.query.keyword, $options: "i" } },
+            { email: { $regex: req.query.keyword, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const users = await userModel
+      .find(keyword)
+      .find({ _id: { $ne: req.user._id } });
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   findUser,
   getUsers,
+  searchUsers,
 };

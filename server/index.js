@@ -115,6 +115,13 @@ io.on("connection", (socket) => {
     onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
     io.emit("getOnlineUsers", onlineUsers);
   });
+
+  // ** NEW GROUP CHAT
+
+  socket.on("setup", (userId) => {
+    socket.join(userId);
+    socket.emit("connected");
+  });
 });
 
 // ------------------------- socket.io ------------------------------

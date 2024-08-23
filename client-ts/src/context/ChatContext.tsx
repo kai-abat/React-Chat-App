@@ -50,6 +50,7 @@ interface ChatContextType {
   isShowChatBox: boolean;
   onShowChatBox: () => void;
   onCloseChatBox: () => void;
+  socket: Socket<any, any> | null;
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -434,6 +435,7 @@ export const ChatContextProvider = ({
         isShowChatBox,
         onShowChatBox,
         onCloseChatBox,
+        socket,
       }}
     >
       {children}
