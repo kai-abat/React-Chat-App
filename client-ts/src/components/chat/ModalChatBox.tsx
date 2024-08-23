@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import ChatBox from "./ChatBox";
 import Modal from "react-bootstrap/Modal";
 import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
