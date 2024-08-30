@@ -42,7 +42,7 @@ const ModalChatBox = () => {
   if (!user || !currentChat) return;
 
   const handleEnterKeyPress = (currentText: string) => {
-    sendTextMessage(currentText, user, currentChat?.id, setTextMessage);
+    sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
   };
 
   return (
@@ -64,7 +64,7 @@ const ModalChatBox = () => {
                   ref={messagesEndRef}
                   key={index}
                   className={`${
-                    message.senderId === user.id
+                    message.senderId._id === user._id
                       ? "message self align-self-end flex-grow-0"
                       : "message align-self-start flex-grow-0"
                   }`}
@@ -94,7 +94,7 @@ const ModalChatBox = () => {
         <button
           className="send-btn"
           onClick={() =>
-            sendTextMessage(textMessage, user, currentChat?.id, setTextMessage)
+            sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
           }
         >
           <svg

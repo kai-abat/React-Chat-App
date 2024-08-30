@@ -12,8 +12,10 @@ export const useFetchLatestMessage = (chat: ChatInfoType) => {
   useEffect(() => {
     const getMessage = async () => {
       const response = await getAllMessageOfCurrentChatRequest(
-        `${baseUrl}/messages/${chat.id}`
+        `${baseUrl}/messages/${chat._id}`
       );
+
+      console.log("useFetchLatestMessage getMessage", response, chat._id);
 
       if (response.success) {
         const length = response.success.messages.length;

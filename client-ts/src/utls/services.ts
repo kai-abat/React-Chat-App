@@ -53,7 +53,7 @@ export const postUserRequest = async (
     }
 
     const user: UserInfoType = {
-      id: data._id,
+      _id: data._id,
       name: data.name,
       email: data.email,
       token: data.token,
@@ -82,7 +82,7 @@ export const getUserRequest = async (
     }
 
     const user: UserInfoType = {
-      id: data._id,
+      _id: data._id,
       name: data.name,
       email: data.email,
       token: data.token,
@@ -106,7 +106,7 @@ export const getAllUsersRequest = async (
 
     const users: UserInfoType[] = data.map((u: any) => {
       return {
-        id: u._id,
+        _id: u._id,
         name: u.name,
         email: u.email,
         token: u.token,
@@ -132,7 +132,7 @@ export const postCreateChatRequest = async (
     }
 
     const chat: ChatInfoType = {
-      id: data._id,
+      _id: data._id,
       members: data.members.slice(),
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
@@ -163,7 +163,7 @@ export const getAllChatRequest = async (
 
     const chats: ChatInfoType[] = data.map((c: any) => {
       return {
-        id: c._id,
+        _id: c._id,
         members: c.members.slice(),
         createdAt: c.createdAt,
         updatedAt: c.updatedAt,
@@ -195,7 +195,7 @@ export const getAllMessageOfCurrentChatRequest = async (
 
     const messages: MessageInfoType[] = data.map((m: any) => {
       return {
-        id: m._id,
+        _id: m._id,
         chatId: m.chatId,
         senderId: m.senderId,
         text: m.text,
@@ -229,7 +229,7 @@ export const postSendTextMessageRequest = async (
     }
 
     const message: MessageInfoType = {
-      id: data._id,
+      _id: data._id,
       senderId: data.senderId,
       chatId: data.chatId,
       text: data.text,

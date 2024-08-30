@@ -28,7 +28,7 @@ export const SocketContextProvider = ({
   useEffect(() => {
     if (!socket || !user) return;
 
-    socket.emit("setup", user.id);
+    socket.emit("setup", user._id);
     socket.on("connected", () => setSocketConnected(true));
   }, [socket, user]);
 

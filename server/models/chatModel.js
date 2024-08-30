@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const chatSchema = new Schema(
   {
-    members: Array,
+    members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

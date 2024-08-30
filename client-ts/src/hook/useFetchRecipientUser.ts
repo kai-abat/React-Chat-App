@@ -14,16 +14,11 @@ export const useFetchRecipientUser = (
     const getUser = async () => {
       if (!user || !chat) return null;
 
-      const recipientId = chat?.members.find((m) => m !== user.id);
+      const recipientUser = chat?.members.find((m) => m._id !== user._id);
 
-      if (!recipientId) return null;
+      if (!recipientUser) return null;
 
-      const response = await getUserRequest(`${baseUrl}/users/${recipientId}`);
-
-      if (response.failure) {
-        return setError(response.failure.message);
-      }
-      setRecipientUser(response.success.user);
+      setRecipientUser(recipientUser);
     };
     getUser();
   }, [chat, user]);

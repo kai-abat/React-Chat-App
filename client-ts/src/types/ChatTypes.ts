@@ -1,28 +1,27 @@
 import { UserInfoType } from "./UserTypes";
 
 export interface ChatInfoType {
-  id: string;
-  members: string[];
+  _id: string;
+  members: UserInfoType[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateChatBodyType {
-  firstId: string;
-  secondId: string;
+  userIds: string[];
 }
 
 export interface MessageInfoType {
-  id: string;
-  chatId: string;
-  senderId: string;
+  _id: string;
+  chatId: ChatInfoType;
+  senderId: UserInfoType;
   text: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NotificationType {
-  senderId: string;
+  senderId: UserInfoType;
   isRead: boolean;
   date: Date;
 }

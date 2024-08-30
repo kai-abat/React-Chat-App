@@ -105,9 +105,8 @@ body {
 
 /* Chat Box */
 .chat-box {
-  max-height: calc(100dvh - 10rem);
-  min-height: calc(100dvh - 10rem);
   overflow-y: auto;
+  height: 80dvh;
   background: rgb(25, 25, 25);
   border-radius: 10px;
 }
@@ -117,7 +116,9 @@ body {
 }
 
 .messages-box {
-  height: 85vh;
+  /* border: solid 1px rgb(207, 207, 207); */
+  height: 70dvh;
+  overflow-y: auto;
 }
 
 /* Chat Header */
@@ -267,4 +268,33 @@ body {
   border-radius: 50%;
   align-items: center;
   justify-content: center;
+}
+
+.search-box {
+  position: relative;
+}
+
+.search-box .search-text {
+  /* padding-right: 0; */
+  width: 100%;
+}
+
+.search-text input {
+  padding-left: 2.5rem;
+}
+
+.search-box .search-btn {
+  position: absolute;
+  left: 0%;
+  width: 50px;
+}
+
+.search-box .search-btn button {
+  background: none;
+  border: none;
+  padding: 0.4rem 0.7rem;
+}
+
+.search-box .search-btn button svg {
+  color: #939292;
 }

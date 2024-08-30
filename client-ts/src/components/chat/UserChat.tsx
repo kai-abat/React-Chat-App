@@ -26,11 +26,11 @@ const UserChat = ({
   const { latestMessage } = useFetchLatestMessage(chat);
 
   const isOnline = onlineUsers.some(
-    (olUser) => olUser.userId === recipientUser?.id
+    (olUser) => olUser.user._id === recipientUser?._id
   );
 
   const recipientNotification = notifications.filter(
-    (n) => n.senderId === recipientUser?.id && n.isRead === false
+    (n) => n.senderId._id === recipientUser?._id && n.isRead === false
   );
 
   const numberOfNotification = recipientNotification.length;

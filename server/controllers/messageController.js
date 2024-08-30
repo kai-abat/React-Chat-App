@@ -9,8 +9,12 @@ const createMessage = async (req, res) => {
       senderId,
       text,
     });
-    const response = await message.save();
-    res.status(200).json(response);
+    let saveMessage = await message.save();
+    saveMessage = await saveMessage.populate("chatId");
+    saveMessage = await saveMessage.populate("chatId.members", "-password");
+    saveMessage = await saveMessage.populate("senderId", "-password");
+
+    res.status(200).json(saveMessage);
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -21,7 +25,15 @@ const createMessage = async (req, res) => {
 const getMessage = async (req, res) => {
   const { chatId } = req.params;
   try {
-    const messages = await messageModel.find({ chatId });
+    let messages = await messageModel
+      .find({ chatId })
+      .populate({
+        path: "chatId",
+        model: "Chat",
+        populate: { path: "members", model: "User", select: "-password" },
+      })
+      .populate("senderId", "-password");
+
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);

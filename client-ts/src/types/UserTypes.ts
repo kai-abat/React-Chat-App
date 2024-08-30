@@ -22,13 +22,19 @@ export interface LoginUserBodyType {
 }
 
 export interface UserInfoType {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   token: string;
 }
 
+export interface UserPublicInfoType {
+  _id: string;
+  name: string;
+  email: string;
+}
+
 export interface OnlineUsersType {
-  userId: string;
+  user: UserInfoType;
   socketId: string;
 }

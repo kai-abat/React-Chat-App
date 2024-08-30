@@ -4,18 +4,26 @@ const chatModel = require("../models/chatModel");
 
 // createChat
 const createChat = async (req, res) => {
-  const { firstId, secondId } = req.body;
+  const { userIds } = req.body;
+
   try {
-    const chat = await chatModel.findOne({
-      members: { $all: [firstId, secondId] },
-    });
+    const chat = await chatModel
+      .findOne({
+        members: { $all: userIds },
+      })
+      .populate("members", "-password");
+
+    console.log("chat", chat);
 
     if (chat) return res.status(200).json(chat);
 
     const newChat = new chatModel({
-      members: [firstId, secondId],
+      members: userIds,
     });
-    const response = await newChat.save();
+    let response = await newChat.save();
+    response = await response.populate("members", "-password");
+    console.log("response", response);
+
     res.status(200).json(response);
   } catch (error) {
     console.error(error);
@@ -27,9 +35,11 @@ const createChat = async (req, res) => {
 const findUserChats = async (req, res) => {
   const userId = req.params.userId;
   try {
-    const userChats = await chatModel.find({
-      members: { $in: userId },
-    });
+    const userChats = await chatModel
+      .find({
+        members: { $in: userId },
+      })
+      .populate("members", "-password");
 
     res.status(200).json(userChats);
   } catch (error) {
@@ -43,9 +53,11 @@ const findChat = async (req, res) => {
   const { firstId, secondId } = req.params;
 
   try {
-    const userChat = await chatModel.findOne({
-      members: { $all: [firstId, secondId] },
-    });
+    const userChat = await chatModel
+      .findOne({
+        members: { $all: [firstId, secondId] },
+      })
+      .populate("members", "-password");
 
     res.status(200).json(userChat);
   } catch (error) {

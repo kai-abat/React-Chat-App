@@ -70,14 +70,14 @@ io.on("connection", (socket) => {
 
   // listen to a connection
   // resend an event coming from the client
-  socket.on("addNewUser", (userId) => {
+  socket.on("addNewUser", (user) => {
     const newUser = {
-      userId,
+      user,
       socketId: socket.id,
     };
 
     const foundUserIndex = onlineUsers.findIndex(
-      (user) => user.userId === userId
+      (onlineUser) => onlineUser.user._id === user._id
     );
 
     if (foundUserIndex !== -1) {
@@ -94,10 +94,11 @@ io.on("connection", (socket) => {
   // add message
   socket.on("sendMessage", (newMessage) => {
     const user = onlineUsers.find(
-      (user) => user.userId === newMessage.recipientId
+      (onlineUsers) => onlineUsers.user._id === newMessage.recipient._id
     );
 
     if (user) {
+      console.log("sendMessage", user);
       io.to(user.socketId).emit("getMessage", newMessage);
 
       if (newMessage.senderId) {

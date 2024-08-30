@@ -18,12 +18,12 @@ const OtherUserChats = () => {
               <div
                 className="single-user"
                 key={index}
-                onClick={() => createChat(user.id, u.id)}
+                onClick={() => createChat(user._id, u._id)}
               >
                 {u.name}
                 <span
                   className={`${
-                    onlineUsers.some((olUser) => olUser.userId === u.id)
+                    onlineUsers.some((olUser) => olUser.user._id === u._id)
                       ? "user-online"
                       : ""
                   }`}

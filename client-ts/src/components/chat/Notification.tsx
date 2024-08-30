@@ -26,7 +26,7 @@ const Notification = () => {
   const unreadNotifications = unreadNotificationsFunc(notifications);
 
   const modifiedNotifications = notifications.reduce((acc, notif) => {
-    const sender = allUsers.find((u) => u.id === notif.senderId);
+    const sender = allUsers.find((u) => u._id === notif.senderId._id);
     if (sender) {
       acc.push({ ...notif, user: sender });
     }
@@ -36,7 +36,7 @@ const Notification = () => {
   const handleShowUserChatbox = (notifUser: UserNotificationType) => {
     // Show Chat Box
     const userChat = userChats?.find((u) => {
-      const found = u.members.find((m) => m === notifUser.user.id);
+      const found = u.members.find((m) => m._id === notifUser.user._id);
       if (found) return true;
     });
 
