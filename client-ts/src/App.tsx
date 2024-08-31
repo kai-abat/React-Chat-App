@@ -15,6 +15,7 @@ import { SocketContextProvider } from "./context/SocketContext";
 
 function App() {
   const { user } = useContext(AuthContext);
+
   return (
     <ChatContextProvider user={user}>
       <SocketContextProvider>

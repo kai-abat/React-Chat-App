@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
 const Register = () => {
   const {
@@ -21,10 +22,8 @@ const Register = () => {
     }
   }, [navigate, user, isLoading]);
 
-  
-
   return (
-    <>
+    <Layout.Content>
       <Form onSubmit={registerUser}>
         <Row
           style={{
@@ -82,7 +81,7 @@ const Register = () => {
           </Col>
         </Row>
       </Form>
-    </>
+    </Layout.Content>
   );
 };
 export default Register;

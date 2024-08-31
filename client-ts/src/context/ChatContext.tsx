@@ -8,6 +8,7 @@ import {
 import { io, Socket } from "socket.io-client";
 import {
   ChatInfoType,
+  ChatInfoWithNewMsg,
   CreateChatBodyType,
   MessageInfoType,
   NotificationType,
@@ -186,6 +187,7 @@ export const ChatContextProvider = ({
 
       setAllUsers(response.success.users);
 
+      console.log("getUsers->userChats", userChats);
       const pChats = response.success.users.filter((u) => {
         let isChatCreated = false;
         if (user?._id === u._id) return false;
@@ -199,6 +201,7 @@ export const ChatContextProvider = ({
 
         return !isChatCreated;
       });
+      console.log("getUsers->pChats", pChats);
       setOtherUsersChat(pChats);
     };
 
@@ -212,78 +215,124 @@ export const ChatContextProvider = ({
         setUserChats(null);
         return;
       }
-      if (user?._id) {
-        setIsUserChatsLoading(true);
-        setUserChatsError(null);
-        const response = await getAllChatRequest(
-          `${baseUrl}/chats/${user._id}`
+
+      console.log("getUserChats starts.....");
+      setIsUserChatsLoading(true);
+      setUserChatsError(null);
+      const response = await getAllChatRequest(`${baseUrl}/chats/${user._id}`);
+
+      setIsUserChatsLoading(false);
+
+      if (response.failure) {
+        return setUserChatsError(response.failure.message);
+      }
+
+      const userChatCopy = response.success.chats.slice();
+      const userChatWithMsg: ChatInfoWithNewMsg[] = [];
+
+      // Sort Chat base from db latest message
+      await userChatCopy.forEach(async (chat) => {
+        const response = await getAllMessageOfCurrentChatRequest(
+          `${baseUrl}/messages/${chat._id}`
         );
+        if (response.success) {
+          const length = response.success.messages.length;
+          const lastMessage = response.success.messages[length - 1];
 
-        setIsUserChatsLoading(false);
+          const chatWithMsg: ChatInfoWithNewMsg = {
+            ...chat,
+            text: lastMessage.text,
+            dateSend: lastMessage.createdAt,
+          };
+          userChatWithMsg.push(chatWithMsg);
+          return;
+        }
+        // if no message yet in the chat
+        userChatWithMsg.push({ ...chat, dateSend: null, text: null });
+      });
 
-        if (response.failure) {
-          return setUserChatsError(response.failure.message);
+      const sortedChatByLatestMsg = userChatCopy.sort((chat1, chat2) => {
+        const date1 = userChatWithMsg.find(
+          (cm) => cm._id === chat1._id
+        )?.dateSend;
+        const date2 = userChatWithMsg.find(
+          (cm) => cm._id === chat2._id
+        )?.dateSend;
+
+        if (!date1) return -1;
+        if (!date2) return 1;
+
+        const convDate1 = Date.parse(date1);
+        const convDate2 = Date.parse(date2);
+
+        if (convDate1 < convDate2) return -1;
+        if (convDate1 > convDate2) return 1;
+
+        return 0;
+      });
+
+      // to debug log the user chat
+      console.log("sort user chat: userChatWithMsg:", userChatWithMsg);
+
+      // SORTING THE USER CHAT BASE FROM LATEST MESSAGE OF RECEPIENT
+      // Get the latest notification of each recipient and insert it to new aray
+      const latestNotifications = notifications.reduce((acc, curr) => {
+        const prev = acc.find((a) => a.senderId === curr.senderId);
+        if (!prev || curr.date > prev.date) {
+          acc.push(curr);
+        }
+        return acc;
+      }, [] as NotificationType[]);
+
+      console.log(
+        "getUserChats->response.success.chats",
+        response.success.chats
+      );
+
+      // loop to each user chat
+      const sortedUserChat = sortedChatByLatestMsg.sort((chat1, chat2) => {
+        // get the recepient from members
+        const recepient1 = chat1.members.find((m) => m._id !== user._id);
+        const recepient2 = chat2.members.find((m) => m._id !== user._id);
+
+        console.log("chats sort recep1: " + recepient1?.name);
+        console.log("chats sort recep2: " + recepient2?.name);
+
+        // get the notification of each recepient
+        let notification1: NotificationType | undefined;
+        let notification2: NotificationType | undefined;
+        if (recepient1) {
+          notification1 = latestNotifications.find(
+            (n) => n.senderId._id === recepient1._id
+          );
         }
 
-        // SORTING THE USER CHAT BASE FROM LATEST MESSAGE OF RECEPIENT
-        // Get the latest notification of each recipient and insert it to new aray
-        const latestNotifications = notifications.reduce((acc, curr) => {
-          const prev = acc.find((a) => a.senderId === curr.senderId);
-          if (!prev || curr.date > prev.date) {
-            acc.push(curr);
-          }
-          return acc;
-        }, [] as NotificationType[]);
+        if (recepient2) {
+          notification2 = latestNotifications.find(
+            (n) => n.senderId._id === recepient2._id
+          );
+        }
 
-        // loop to each user chat
-        const sortedUserChat = response.success.chats.sort((chat1, chat2) => {
-          // get the recepient from members
-          const recepient1 = chat1.members.find((m) => m._id !== user._id);
-          const recepient2 = chat2.members.find((m) => m._id !== user._id);
+        if (!notification1) {
+          return 1;
+        }
+        if (!notification2) {
+          return -1;
+        }
 
-          console.log("chats sort recep1: " + recepient1?.name);
-          console.log("chats sort recep2: " + recepient2?.name);
+        if (notification1 && notification2) {
+          if (notification1.date < notification2.date) return 1;
+          if (notification1.date > notification2.date) return -1;
+        }
 
-          // get the notification of each recepient
-          let notification1: NotificationType | undefined;
-          let notification2: NotificationType | undefined;
-          if (recepient1) {
-            notification1 = latestNotifications.find(
-              (n) => n.senderId._id === recepient1._id
-            );
-          }
+        return 0;
 
-          if (recepient2) {
-            notification2 = latestNotifications.find(
-              (n) => n.senderId._id === recepient2._id
-            );
-          }
+        // compare the notification date
+      });
 
-          if (!notification1) {
-            return 1;
-          }
-          if (!notification2) {
-            return -1;
-          }
+      console.log("getUserChats: sortedUserChat:", sortedUserChat);
 
-          if (notification1 && notification2) {
-            if (notification1.date < notification2.date) return 1;
-            if (notification1.date > notification2.date) return -1;
-          }
-
-          return 0;
-
-          // compare the notification date
-        });
-
-        console.log("getUserChats: user:", user.name, user._id);
-        console.log("getUserChats: notifications:", notifications);
-        console.log("getUserChats: latestNotifications:", latestNotifications);
-        console.log("getUserChats: userChats:", response.success.chats);
-        console.log("getUserChats: sortedUserChat:", sortedUserChat);
-
-        setUserChats(sortedUserChat);
-      }
+      setUserChats(sortedUserChat);
     };
     getUserChats();
   }, [user, notifications]);
@@ -352,8 +401,21 @@ export const ChatContextProvider = ({
         }
       });
       setTextMessage("");
+
+      // Sort User Chats
+      if (userChats) {
+        const userChats2 = [...userChats];
+        const index = userChats2.findIndex(
+          (chat) => chat._id === currentChatId
+        );
+        if (index) {
+          userChats2.unshift(userChats2.splice(index, 1)[0]);
+          setUserChats(userChats2);
+          console.log("sortedUserChats", index, userChats2);
+        }
+      }
     },
-    []
+    [userChats]
   );
 
   // selecting chat wiill show chat box
@@ -378,26 +440,30 @@ export const ChatContextProvider = ({
   );
 
   // create chat to other users
-  const createChat = useCallback(async (firstId: string, secondId: string) => {
-    const body: CreateChatBodyType = { userIds: [firstId, secondId] };
+  const createChat = useCallback(
+    async (firstId: string, secondId: string) => {
+      const body: CreateChatBodyType = { userIds: [firstId, secondId] };
 
-    const response = await postCreateChatRequest(
-      `${baseUrl}/chats`,
-      JSON.stringify(body)
-    );
+      const response = await postCreateChatRequest(
+        `${baseUrl}/chats`,
+        JSON.stringify(body)
+      );
 
-    if (response.failure) {
-      return setUserChatsError(response.failure.message);
-    }
-
-    setUserChats((prev) => {
-      if (!prev) {
-        return (prev = [response.success.chat]);
-      } else {
-        return [...prev, response.success.chat];
+      if (response.failure) {
+        return setUserChatsError(response.failure.message);
       }
-    });
-  }, []);
+
+      setUserChats((prev) => {
+        if (!prev) {
+          return (prev = [response.success.chat]);
+        } else {
+          return [...prev, response.success.chat];
+        }
+      });
+      updateCurrentChat(response.success.chat);
+    },
+    [updateCurrentChat]
+  );
 
   const updateNotification = useCallback(
     (sender: UserInfoType, isRead: boolean) => {

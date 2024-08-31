@@ -2,6 +2,7 @@ import { useContext, useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 
 const Login = () => {
   const {
@@ -23,7 +24,7 @@ const Login = () => {
 
   if (isLoading) return <p>Loading Page...</p>;
   return (
-    <>
+    <Layout.Content>
       <Form onSubmit={login}>
         <Row
           style={{
@@ -61,7 +62,7 @@ const Login = () => {
           </Col>
         </Row>
       </Form>
-    </>
+    </Layout.Content>
   );
 };
 export default Login;

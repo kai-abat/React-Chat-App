@@ -29,3 +29,8 @@ export interface NotificationType {
 export interface UserNotificationType extends NotificationType {
   user: UserInfoType;
 }
+
+export interface ChatInfoWithNewMsg extends ChatInfoType {
+  text: string | null;
+  dateSend: string | null;
+}

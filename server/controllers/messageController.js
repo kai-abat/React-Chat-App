@@ -1,3 +1,4 @@
+const chatModel = require("../models/chatModel");
 const messageModel = require("../models/messageModel");
 
 // createMessage
@@ -13,6 +14,12 @@ const createMessage = async (req, res) => {
     saveMessage = await saveMessage.populate("chatId");
     saveMessage = await saveMessage.populate("chatId.members", "-password");
     saveMessage = await saveMessage.populate("senderId", "-password");
+
+    const created = saveMessage.createdAt;
+    const chat = await chatModel.findByIdAndUpdate(chatId, {
+      latestMessageUpdate: created,
+    });
+    console.log("createMessage chat", chat);
 
     res.status(200).json(saveMessage);
   } catch (error) {

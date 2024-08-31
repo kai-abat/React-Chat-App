@@ -1,14 +1,16 @@
 import { useContext } from "react";
-import { Container, Stack } from "react-bootstrap";
+import { Stack } from "react-bootstrap";
 import { ChatContext } from "../context/ChatContext";
 import { AuthContext } from "../context/AuthContext";
-import OtherUserChats from "../components/chat/OtherUserChats";
+// import OtherUserChats from "../components/chat/OtherUserChats";
 
 import UserChatV2 from "../components/chat/UserChatV2";
 import ModalChatBox from "../components/chat/ModalChatBox";
 import useWindowDimensions from "../hook/useWindowDimensions";
 import ChatBox from "../components/chat/ChatBox";
 import SearchUser from "../components/chat/SearchUser";
+import Layout from "../components/Layout";
+import NavChat from "../components/chat/NavChat";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);
@@ -18,34 +20,38 @@ const Chat = () => {
   if (!user) return <p>No user is currently logged in!</p>;
 
   return (
-    <Container id="chat-container">
-      <Stack direction="horizontal" gap={4} className="align-items-start">
-        <Stack className=" w-auto">
-          <OtherUserChats />
-          <SearchUser />
-          {!userChats || userChats.length < 1 ? null : (
-            <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
-              {isUserChatsLoading && <p>Loading chats...</p>}
-              {userChats.map((chat, index) => {
-                return (
-                  <div key={index}>
-                    <UserChatV2 chat={chat} user={user} />
-                  </div>
-                );
-              })}
-            </Stack>
+    <>
+      <Layout.Content isGrow={false}>
+        <NavChat />
+      </Layout.Content>
+      <Layout.Content isGrow={false}>
+        <SearchUser />
+        {/* <OtherUserChats /> */}
+        {!userChats || userChats.length < 1 ? null : (
+          <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
+            {isUserChatsLoading && <p>Loading chats...</p>}
+            {userChats.map((chat, index) => {
+              return (
+                <div key={index}>
+                  <UserChatV2 chat={chat} user={user} />
+                </div>
+              );
+            })}
+          </Stack>
+        )}
+      </Layout.Content>
+
+      {!userChats || userChats.length < 1 ? null : (
+        <>
+          {dimensions.width > 991 && (
+            <Layout.Content>
+              <ChatBox />
+            </Layout.Content>
           )}
-        </Stack>
-        <Stack className="w-75">
-          {!userChats || userChats.length < 1 ? null : (
-            <>
-              {dimensions.width > 991 && <ChatBox />}
-              {dimensions.width <= 991 && <ModalChatBox />}
-            </>
-          )}
-        </Stack>
-      </Stack>
-    </Container>
+          {dimensions.width <= 991 && <ModalChatBox />}
+        </>
+      )}
+    </>
   );
 };
 export default Chat;

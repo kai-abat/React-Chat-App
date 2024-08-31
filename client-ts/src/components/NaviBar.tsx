@@ -9,7 +9,7 @@ const NaviBar = () => {
   return (
     <Navbar
       bg="dark"
-      className="mb-4"
+      className=""
       style={{
         height: "3.75rem",
       }}
