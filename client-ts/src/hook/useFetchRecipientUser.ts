@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChatInfoType } from "../types/ChatTypes";
 import { UserInfoType } from "../types/UserTypes";
-import { baseUrl, getUserRequest } from "../utls/services";
 
 export const useFetchRecipientUser = (
   chat: ChatInfoType | null,

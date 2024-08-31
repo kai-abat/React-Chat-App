@@ -98,7 +98,6 @@ io.on("connection", (socket) => {
     );
 
     if (user) {
-      console.log("sendMessage", user);
       io.to(user.socketId).emit("getMessage", newMessage);
 
       if (newMessage.senderId) {

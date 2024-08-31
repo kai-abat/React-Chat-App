@@ -1,14 +1,14 @@
-import { AuthContextProvider } from "../context/AuthContext";
 import { Navigate, Route, Routes } from "react-router-dom";
-
-import ProtectedRoute from "../router/ProtectedRoute";
+import { AuthContextProvider } from "../context/AuthContext";
 import LayoutMain from "../components/LayoutMain";
-import Chat from "../pages/Chat";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import NotFound from "../pages/NotFound";
 import About from "../pages/About";
+import Chat from "../pages/Chat";
 import Contact from "../pages/Contact";
+import Login from "../pages/Login";
+import NotFound from "../pages/NotFound";
+import Register from "../pages/Register";
+import ProtectedRoute from "../router/ProtectedRoute";
+
 const AuthWrapper = () => {
   return (
     <AuthContextProvider>

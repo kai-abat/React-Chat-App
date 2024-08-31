@@ -1,6 +1,10 @@
 import "bootstrap/dist/css/bootstrap.min.css"; // import the bootstrap css file
+import { useContext } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LayoutMain from "./components/LayoutMain";
+import { AuthContext } from "./context/AuthContext";
+import { ChatContextProvider } from "./context/ChatContext";
+import { SocketContextProvider } from "./context/SocketContext";
 import About from "./pages/About";
 import Chat from "./pages/Chat";
 import Contact from "./pages/Contact";
@@ -8,10 +12,6 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import ProtectedRoute from "./router/ProtectedRoute";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
-import { ChatContextProvider } from "./context/ChatContext";
-import { SocketContextProvider } from "./context/SocketContext";
 
 function App() {
   const { user } = useContext(AuthContext);

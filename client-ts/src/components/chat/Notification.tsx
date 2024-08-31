@@ -1,8 +1,8 @@
+import moment from "moment";
 import { useContext, useState } from "react";
 import { ChatContext } from "../../context/ChatContext";
-import { unreadNotificationsFunc } from "../../utls/unreadNotification";
 import { UserNotificationType } from "../../types/ChatTypes";
-import moment from "moment";
+import { unreadNotificationsFunc } from "../../utls/unreadNotification";
 
 const Notification = () => {
   const {

@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { ChatContext } from "../../context/ChatContext";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
 
 // Other user that has no chat history
 const OtherUserChats = () => {

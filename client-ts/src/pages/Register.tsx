@@ -1,8 +1,8 @@
 import { useContext, useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
-import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import { AuthContext } from "../context/AuthContext";
 
 const Register = () => {
   const {

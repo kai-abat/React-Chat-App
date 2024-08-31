@@ -1,18 +1,18 @@
 import { ENDPOINT } from "../context/ChatContext";
 import {
-  UserResponseType,
   AllUsersResponseType,
   ChatResponseType,
   ChatsResponseType,
-  MessagesResponseType,
   GenericResponseType,
   MessageResponseType,
+  MessagesResponseType,
+  UserResponseType,
 } from "../types/APIReturnTypes";
 import { ChatInfoType, MessageInfoType } from "../types/ChatTypes";
 import { UserInfoType } from "../types/UserTypes";
 import {
-  getFetchRequest,
   getCatchErrorMessage,
+  getFetchRequest,
   postFetchRequest,
 } from "./apiRequests";
 

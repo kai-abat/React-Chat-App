@@ -1,12 +1,12 @@
+import moment from "moment";
+import { useContext } from "react";
 import { Stack } from "react-bootstrap";
+import avatar from "../../assets/avatar.svg";
+import { ChatContext } from "../../context/ChatContext";
+import { useFetchLatestMessage } from "../../hook/useFetchLatestMessage";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 import { ChatInfoType } from "../../types/ChatTypes";
 import { UserInfoType } from "../../types/UserTypes";
-import avatar from "../../assets/avatar.svg";
-import { useContext } from "react";
-import { ChatContext } from "../../context/ChatContext";
-import moment from "moment";
-import { useFetchLatestMessage } from "../../hook/useFetchLatestMessage";
 
 // Component that display the user's with chat history
 const UserChat = ({

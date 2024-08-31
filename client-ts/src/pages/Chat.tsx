@@ -1,16 +1,14 @@
 import { useContext } from "react";
 import { Stack } from "react-bootstrap";
-import { ChatContext } from "../context/ChatContext";
-import { AuthContext } from "../context/AuthContext";
-// import OtherUserChats from "../components/chat/OtherUserChats";
-
-import UserChatV2 from "../components/chat/UserChatV2";
-import ModalChatBox from "../components/chat/ModalChatBox";
-import useWindowDimensions from "../hook/useWindowDimensions";
 import ChatBox from "../components/chat/ChatBox";
-import SearchUser from "../components/chat/SearchUser";
-import Layout from "../components/Layout";
+import ModalChatBox from "../components/chat/ModalChatBox";
 import NavChat from "../components/chat/NavChat";
+import SearchUser from "../components/chat/SearchUser";
+import UserChatV2 from "../components/chat/UserChatV2";
+import Layout from "../components/Layout";
+import { AuthContext } from "../context/AuthContext";
+import { ChatContext } from "../context/ChatContext";
+import useWindowDimensions from "../hook/useWindowDimensions";
 
 const Chat = () => {
   const { user } = useContext(AuthContext);

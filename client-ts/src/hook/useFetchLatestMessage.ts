@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { ChatInfoType, MessageInfoType } from "../types/ChatTypes";
 import { ChatContext } from "../context/ChatContext";
+import { ChatInfoType, MessageInfoType } from "../types/ChatTypes";
 import { baseUrl, getAllMessageOfCurrentChatRequest } from "../utls/services";
 
 export const useFetchLatestMessage = (chat: ChatInfoType) => {

@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import { Modal, Stack } from "react-bootstrap";
+import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { UserInfoType } from "../../types/UserTypes";
 import User from "./User";
-import { AuthContext } from "../../context/AuthContext";
 
 const SearchChatModal = ({
   isShowResultsModal,

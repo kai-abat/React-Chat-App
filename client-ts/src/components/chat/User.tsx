@@ -1,9 +1,9 @@
-import { Stack } from "react-bootstrap";
-import { UserInfoType } from "../../types/UserTypes";
-import avatar from "../../assets/avatar.svg";
 import { useContext } from "react";
-import { ChatContext } from "../../context/ChatContext";
+import { Stack } from "react-bootstrap";
+import avatar from "../../assets/avatar.svg";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import { UserInfoType } from "../../types/UserTypes";
 
 const User = ({
   recipient,
