@@ -15,7 +15,7 @@ export const useFetchRecipientUser = (
 
       const recipientUser = chat?.members.find((m) => m._id !== user._id);
 
-      if (!recipientUser) return null;
+      if (!recipientUser) return setError("No recipient found");
 
       setRecipientUser(recipientUser);
     };
