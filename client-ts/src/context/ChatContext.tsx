@@ -62,9 +62,9 @@ export const ChatContext = createContext<ChatContextType>(
   {} as ChatContextType
 );
 
-// export const ENDPOINT = "http://localhost:5000";
+export const ENDPOINT = "http://localhost:5000";
 // export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; // -> After deployment
-export const ENDPOINT = "https://gchat-92kx.onrender.com"; // -> After deployment
+// export const ENDPOINT = "https://gchat-92kx.onrender.com"; // -> After deployment
 
 export const ChatContextProvider = ({
   children,

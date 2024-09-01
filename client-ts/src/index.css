@@ -2,6 +2,10 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
 
+:root {
+  --main-bg-color: #191919;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -30,6 +34,27 @@ body {
   color: white;
   min-height: 100vh;
 }
+
+/* ------ scrollbar ------ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0.25rem;
+  background-color: var(--bs-primary);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bs-primary);
+}
+
+/* ------ scrollbar ------ */
 
 .main-container {
   display: flex;
@@ -126,12 +151,12 @@ body {
 .chat-box {
   overflow-y: auto;
   height: 80dvh;
-  background: rgb(25, 25, 25);
+  background: var(--main-bg-color);
   border-radius: 10px;
 }
 
 .modal-chat-box {
-  background: rgb(25, 25, 25);
+  background: var(--main-bg-color);
 }
 
 .messages-box {
@@ -316,4 +341,26 @@ body {
 
 .search-box .search-btn button svg {
   color: #939292;
+}
+
+.modal-create-gc {
+  background: var(--main-bg-color);
+}
+
+.checkbox-user-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.checkbox-user-preview {
+  --bs-form-valid-border-color: var(--bs-primary);
+  --bs-form-valid-color: var(--bs-primary);
+}
+
+.checkbox-user-preview .this-checkbox {
+  border-radius: 1em;
+  width: 2rem;
+  height: 1.5rem;
 }
