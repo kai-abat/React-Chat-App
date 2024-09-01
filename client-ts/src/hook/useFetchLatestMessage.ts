@@ -15,8 +15,6 @@ export const useFetchLatestMessage = (chat: ChatInfoType) => {
         `${baseUrl}/messages/${chat._id}`
       );
 
-      console.log("useFetchLatestMessage getMessage", response, chat._id);
-
       if (response.success) {
         const length = response.success.messages.length;
         const lastMessage = response.success.messages[length - 1];

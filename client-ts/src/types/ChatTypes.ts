@@ -34,3 +34,8 @@ export interface ChatInfoWithNewMsg extends ChatInfoType {
   text: string | null;
   dateSend: string | null;
 }
+
+export interface CreateGroupChatFormType {
+  groupName: string;
+  members: UserInfoType[];
+}

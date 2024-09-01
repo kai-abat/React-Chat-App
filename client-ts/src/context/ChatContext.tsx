@@ -56,6 +56,7 @@ interface ChatContextType {
   onShowChatBox: () => void;
   onCloseChatBox: () => void;
   socket: Socket<any, any> | null;
+  availableUsers: UserInfoType[];
 }
 
 export const ChatContext = createContext<ChatContextType>(
@@ -93,6 +94,9 @@ export const ChatContextProvider = ({
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [allUsers, setAllUsers] = useState<UserInfoType[]>([]);
   const [isShowChatBox, setIsShowChatBox] = useState<boolean>(false);
+  const [availableUsers, setAvailableUsers] = useState<UserInfoType[]>([]);
+
+  // useState Hook section --------------------------------------------
 
   // initialize socket
   useEffect(() => {
@@ -371,6 +375,19 @@ export const ChatContextProvider = ({
     getMessages();
   }, [currentChat]);
 
+  useEffect(() => {
+    const getAvailableUsers = () => {
+      if (!user) return;
+      const otherUsers = allUsers.filter((u) => u._id !== user._id);
+      setAvailableUsers(otherUsers);
+    };
+    getAvailableUsers();
+  }, [allUsers, user]);
+
+  // useState Hook section -------------------------------------------
+
+  // useCallback Hook section ----------------------------------------
+
   // send text message
   const sendTextMessage = useCallback(
     async (
@@ -498,6 +515,8 @@ export const ChatContextProvider = ({
     setIsShowChatBox(false);
   }, []);
 
+  // useCallback Hook section ----------------------------------------
+
   return (
     <ChatContext.Provider
       value={{
@@ -524,6 +543,7 @@ export const ChatContextProvider = ({
         onShowChatBox,
         onCloseChatBox,
         socket,
+        availableUsers,
       }}
     >
       {children}

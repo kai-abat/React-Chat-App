@@ -5,6 +5,10 @@ import CreateGroupChatForm from "./CreateGroupChatForm";
 
 const CreateGroupChatModal = () => {
   const { isShowGroupChatModal, onShaowGCModal } = useContext(GroupChatContext);
+
+  const handleCreateGroupChat = () => {
+    onShaowGCModal(false);
+  };
   return (
     <Modal
       show={isShowGroupChatModal}
@@ -20,7 +24,7 @@ const CreateGroupChatModal = () => {
         <CreateGroupChatForm />
       </Modal.Body>
       <Modal.Footer>
-        <Button>Create</Button>
+        <Button onClick={handleCreateGroupChat}>Create</Button>
       </Modal.Footer>
     </Modal>
   );

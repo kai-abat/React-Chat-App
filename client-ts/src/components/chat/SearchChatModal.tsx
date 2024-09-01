@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Modal, Stack } from "react-bootstrap";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
@@ -19,6 +19,8 @@ const SearchChatModal = ({
 
   const splitKeywords = searchKeywords.split(" ");
 
+  useEffect(() => {}, []);
+
   if (!user || !otherUsersChat) return;
 
   const foundUsers: UserInfoType[] = [];
@@ -26,8 +28,12 @@ const SearchChatModal = ({
   if (isShowResultsModal) {
     // Search from all user array except the user login
     splitKeywords.forEach((keyword) => {
+      if (keyword === "") return;
       const users = allUsers.filter((u) => {
-        return u.name.toLowerCase().match(keyword) && u._id !== user._id;
+        return (
+          u.name.toLowerCase().match(keyword.toLowerCase()) &&
+          u._id !== user._id
+        );
       });
 
       users.forEach((user) => {
