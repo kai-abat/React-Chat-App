@@ -24,7 +24,9 @@ const CreateGroupChatModal = () => {
         <CreateGroupChatForm />
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={handleCreateGroupChat}>Create</Button>
+        <Button onClick={handleCreateGroupChat} disabled>
+          Create
+        </Button>
       </Modal.Footer>
     </Modal>
   );
