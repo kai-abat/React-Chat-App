@@ -2,13 +2,7 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
-
-// jwt
-const createToken = (_id) => {
-  const jwtKey = process.env.JWT_SECRET_KEY;
-
-  return jwt.sign({ _id }, jwtKey, { expiresIn: "3d" });
-};
+const { hashPassword, generateToken, matchPassword } = require("../auth/auth");
 
 const registerUser = async (req, res) => {
   try {
@@ -35,13 +29,12 @@ const registerUser = async (req, res) => {
     user = new userModel({ name, email, password });
 
     // hash the password using bcrypt
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
+    user.password = hashPassword(user.password);
 
     await user.save();
 
     // generate jwt token
-    const token = createToken(user._id);
+    const token = generateToken(user);
 
     res.status(200).json({ _id: user._id, name, email, token });
   } catch (error) {
@@ -65,10 +58,10 @@ const loginUser = async (req, res) => {
             ":PW"
         );
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await matchPassword(password, user.password);
     if (!isValidPassword) res.status(400).json("Invalid email or password2...");
 
-    const token = createToken(user._id);
+    const token = generateToken(user);
 
     res.status(200).json({ _id: user._id, name: user.name, email, token });
   } catch (error) {
@@ -115,7 +108,7 @@ const searchUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json(error.message);
   }
 };
 

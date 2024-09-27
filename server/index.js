@@ -5,8 +5,11 @@ const userRoute = require("./route/userRoute");
 const chatRoute = require("./route/chatRoute");
 const messageRoute = require("./route/messageRoute");
 const path = require("path");
+const jwt = require("jsonwebtoken");
+const userModel = require("./models/userModel");
+const { protect } = require("./auth/auth");
 
-require("dotenv").config();
+require("dotenv").config(); // config env variables
 
 const port = process.env.PORT || 5000;
 const mongoDbURI = process.env.MONGODB_URI;
@@ -19,8 +22,36 @@ mongoose
 const app = express();
 
 app.use(express.json());
-
+// midlleware allow cors
 app.use(cors());
+
+// middleware authorization
+app.use(protect);
+// app.use(async (req, res, next) => {
+//   let token;
+
+//   // auth using header bearer
+//   if (
+//     req.headers.authorization &&
+//     req.headers.authorization.startsWith("Bearer")
+//   ) {
+//     token = req.headers.authorization.split(" ")[1];
+
+//     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+//     req.user = await userModel
+//       .findById(decodedToken._id)
+//       .select("-password -email");
+
+//     // return res.status(200).json(req.user);
+//     console.log("middleware authentication successful");
+//     next();
+//   }
+
+//   if (!token) {
+//     res.status(401).json({ message: "Invalid authorization token..." });
+//   }
+// });
 
 app.use("/api/users", userRoute);
 app.use("/api/chats", chatRoute);
