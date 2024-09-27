@@ -43,11 +43,11 @@ const protect = async (req, res, next) => {
 
     const headerAuth = req.headers.authorization;
     // console.log("headerAuth", headerAuth);
-    if (!headerAuth) {
-      if (authUrl.includes(originalUrl)) {
-        console.log("Url is for authorization: ", originalUrl);
-        return next();
-      }
+
+    // skip authentication if login or registration
+    if (authUrl.includes(originalUrl)) {
+      console.log("Url is for authorization: ", originalUrl);
+      return next();
     }
 
     console.log("checking bearer token...");

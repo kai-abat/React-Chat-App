@@ -4,10 +4,12 @@ export const postFetchRequest = async (
   url: string,
   body: string
 ): Promise<GetFetchRequestReturnType> => {
+  const token = localStorage.getItem("Gchat_Token");
   const response = await fetch(`${url}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
     },
     body,
   });
@@ -33,7 +35,14 @@ export const postFetchRequest = async (
 export const getFetchRequest = async (
   url: string
 ): Promise<GetFetchRequestReturnType> => {
-  const response = await fetch(url);
+  const token = localStorage.getItem("Gchat_Token");
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   const data = await response.json();
 
   let responseError: string | undefined;

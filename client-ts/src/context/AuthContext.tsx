@@ -113,6 +113,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return setRegisterError(response.failure.message);
       } else {
         localStorage.setItem("User", JSON.stringify(response.success.user));
+        localStorage.setItem("Gchat_Token", response.success.user.token);
         setUser(response.success.user);
         console.log(response.success.user);
       }
@@ -149,6 +150,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return setLoginError(response.failure.message);
       } else {
         localStorage.setItem("User", JSON.stringify(response.success.user));
+        localStorage.setItem("Gchat_Token", response.success.user.token);
         setUser(response.success.user);
         console.log(response.success.user);
       }
