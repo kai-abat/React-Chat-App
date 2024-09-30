@@ -2,6 +2,7 @@ import {
   createContext,
   ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -26,6 +27,7 @@ import {
   postCreateChatRequest,
   postSendTextMessageRequest,
 } from "../utls/services";
+import { AuthContext } from "./AuthContext";
 
 interface ChatContextType {
   userChats: ChatInfoType[] | null;
@@ -67,13 +69,9 @@ export const ENDPOINT = "http://localhost:5000";
 // export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; // -> After deployment
 // export const ENDPOINT = "https://gchat-92kx.onrender.com"; // -> After deployment
 
-export const ChatContextProvider = ({
-  children,
-  user,
-}: {
-  children: ReactNode;
-  user: UserInfoType | null;
-}) => {
+export const ChatContextProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useContext(AuthContext);
+
   const [userChats, setUserChats] = useState<ChatInfoType[] | null>(null);
   const [isUserChatsLoading, setIsUserChatsLoading] = useState<boolean>(false);
   const [userChatsError, setUserChatsError] = useState<string | null>(null);

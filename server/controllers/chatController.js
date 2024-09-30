@@ -1,8 +1,14 @@
 const chatModel = require("../models/chatModel");
 
+const populateRef = [
+  { path: "members", select: "-password" },
+  { path: "groupChatAdmin", select: "-password" },
+];
+
 // api end points
 
 // createChat
+// regular chat (not a group chat)
 const createChat = async (req, res) => {
   const { userIds } = req.body;
 
@@ -11,18 +17,19 @@ const createChat = async (req, res) => {
       .findOne({
         members: { $all: userIds },
       })
-      .populate("members", "-password");
+      .populate(populateRef);
 
-    console.log("chat", chat);
+    console.log("found chat:", chat);
 
     if (chat) return res.status(200).json(chat);
 
     const newChat = new chatModel({
       members: userIds,
     });
+
     let response = await newChat.save();
-    response = await response.populate("members", "-password");
-    console.log("response", response);
+    response = await response.populate(populateRef);
+    console.log("create chat:", response);
 
     res.status(200).json(response);
   } catch (error) {
@@ -39,7 +46,7 @@ const findUserChats = async (req, res) => {
       .find({
         members: { $in: userId },
       })
-      .populate("members", "-password");
+      .populate(populateRef);
 
     res.status(200).json(userChats);
   } catch (error) {
@@ -57,7 +64,7 @@ const findChat = async (req, res) => {
       .findOne({
         members: { $all: [firstId, secondId] },
       })
-      .populate("members", "-password");
+      .populate(populateRef);
 
     res.status(200).json(userChat);
   } catch (error) {

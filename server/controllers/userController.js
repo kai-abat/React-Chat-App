@@ -1,6 +1,4 @@
 const userModel = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const { hashPassword, generateToken, matchPassword } = require("../auth/auth");
 
@@ -29,7 +27,7 @@ const registerUser = async (req, res) => {
     user = new userModel({ name, email, password });
 
     // hash the password using bcrypt
-    user.password = hashPassword(user.password);
+    user.password = await hashPassword(user.password);
 
     await user.save();
 

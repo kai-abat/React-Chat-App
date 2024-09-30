@@ -1,25 +1,31 @@
-const chatModel = require("../models/chatModel");
+// const chatModel = require("../models/chatModel");
 const messageModel = require("../models/messageModel");
+
+const populateRef = [
+  { path: "chatId", populate: { path: "members", select: "-password" } },
+  { path: "senderId", select: "-password" },
+  { path: "readBy", select: "-password" },
+];
+
+// Reusable Functions
+const getMessageById = async (id) => {
+  return await messageModel.findOne({ _id: id }).populate(populateRef);
+};
 
 // createMessage
 const createMessage = async (req, res) => {
   const { chatId, senderId, text } = req.body;
+
+  const readBy = [senderId];
   try {
     const message = new messageModel({
       chatId,
       senderId,
       text,
+      readBy,
     });
     let saveMessage = await message.save();
-    saveMessage = await saveMessage.populate("chatId");
-    saveMessage = await saveMessage.populate("chatId.members", "-password");
-    saveMessage = await saveMessage.populate("senderId", "-password");
-
-    const created = saveMessage.createdAt;
-    const chat = await chatModel.findByIdAndUpdate(chatId, {
-      latestMessageUpdate: created,
-    });
-    console.log("createMessage chat", chat);
+    saveMessage = await saveMessage.populate(populateRef);
 
     res.status(200).json(saveMessage);
   } catch (error) {
@@ -32,14 +38,7 @@ const createMessage = async (req, res) => {
 const getMessage = async (req, res) => {
   const { chatId } = req.params;
   try {
-    let messages = await messageModel
-      .find({ chatId })
-      .populate({
-        path: "chatId",
-        model: "Chat",
-        populate: { path: "members", model: "User", select: "-password" },
-      })
-      .populate("senderId", "-password");
+    const messages = await getMessageById(chatId);
 
     res.status(200).json(messages);
   } catch (error) {
