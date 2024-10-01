@@ -50,7 +50,7 @@ const NaviBar = () => {
             )}
             {user && (
               <>
-                <Notification />
+                {/* <Notification /> */}
                 <Link
                   onClick={() => logout()}
                   to="/login"

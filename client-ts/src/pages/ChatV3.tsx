@@ -1,20 +1,29 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Stack } from "react-bootstrap";
-import ChatBox from "../components/chat/ChatBox";
 import ChatControls from "../components/chat/ChatControls";
 import CreateGroupChatModal from "../components/chat/CreateGroupChatModal";
 import ModalChatBox from "../components/chat/ModalChatBox";
 import NavChat from "../components/chat/NavChat";
-import UserChatV2 from "../components/chat/UserChatV2";
 import Layout from "../components/Layout";
 import { AuthContext } from "../context/AuthContext";
-import { ChatContext } from "../context/ChatContext";
+import { ChatV2Context } from "../context/ChatV2Context";
+import useChats from "../hook/useChats";
 import useWindowDimensions from "../hook/useWindowDimensions";
+import UserChatV3 from "../components/chat/UserChatV3";
+import ChatBox from "../components/chat/ChatBox";
 
-const Chat = () => {
+// Version 3
+const ChatV3 = () => {
   const { user } = useContext(AuthContext);
-  const { userChats, isUserChatsLoading } = useContext(ChatContext);
+  const { userChats, setUserChats } = useContext(ChatV2Context);
+  const { chats, isFetchingChats, error: errorChats } = useChats();
   const dimensions = useWindowDimensions();
+
+  useEffect(() => {
+    if (!errorChats && !isFetchingChats && chats) {
+      setUserChats(chats);
+    }
+  }, [chats, isFetchingChats, errorChats, setUserChats]);
 
   if (!user) return <p>No user is currently logged in!</p>;
 
@@ -26,13 +35,14 @@ const Chat = () => {
       <Layout.Content isGrow={false}>
         <ChatControls />
         {/* <OtherUserChats /> */}
+
         {!userChats || userChats.length < 1 ? null : (
           <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
-            {isUserChatsLoading && <p>Loading chats...</p>}
+            {isFetchingChats && <p>Loading chats...</p>}
             {userChats.map((chat, index) => {
               return (
                 <div key={index}>
-                  <UserChatV2 chat={chat} user={user} />
+                  <UserChatV3 chat={chat} user={user} />
                 </div>
               );
             })}
@@ -56,4 +66,4 @@ const Chat = () => {
     </>
   );
 };
-export default Chat;
+export default ChatV3;

@@ -4,36 +4,42 @@ import { Stack } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import InputEmojiWithRef from "react-input-emoji";
 import { AuthContext } from "../../context/AuthContext";
-import { ChatContext } from "../../context/ChatContext";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
+import { ChatV2Context } from "../../context/ChatV2Context";
+import useChatMessage from "../../hook/useChatMessage";
 
 const ModalChatBox = () => {
   const { user } = useContext(AuthContext);
+  // const {
+  //   currentChat,
+  //   messages,
+  //   isShowChatBox,
+  //   updateCurrentChat,
+  //   onShowChatBox,
+  //   onCloseChatBox,
+  //   sendTextMessage,
+  //   notifications,
+  // } = useContext(ChatContext);
   const {
     currentChat,
-    messages,
+    onCloseChatBox,
+    onShowChatBox,
     isShowChatBox,
     updateCurrentChat,
-    onShowChatBox,
-    onCloseChatBox,
-    sendTextMessage,
-    notifications,
-  } = useContext(ChatContext);
+  } = useContext(ChatV2Context);
+
+  const { chatMessages } = useChatMessage(currentChat);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<null | HTMLInputElement>(null);
 
+  // side effect to scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, currentChat, notifications]);
+  }, [currentChat]);
 
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputRef]);
-
+  // side effect open/close chat box
   useEffect(() => {
     if (!currentChat) return onCloseChatBox();
     onShowChatBox();
@@ -41,9 +47,9 @@ const ModalChatBox = () => {
 
   if (!user || !currentChat) return;
 
-  const handleEnterKeyPress = (currentText: string) => {
-    sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
-  };
+  // const handleEnterKeyPress = (currentText: string) => {
+  //   sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
+  // };
 
   return (
     <Modal
@@ -57,8 +63,8 @@ const ModalChatBox = () => {
       </Modal.Header>
       <Modal.Body>
         <Stack gap={3} className="modal-body-messages">
-          {messages &&
-            messages.map((message, index) => {
+          {chatMessages &&
+            chatMessages.map((message, index) => {
               return (
                 <Stack
                   ref={messagesEndRef}
@@ -87,15 +93,15 @@ const ModalChatBox = () => {
           borderColor="rgba(72,112,223,0.2)"
           shouldReturn
           shouldConvertEmojiToImage={false}
-          onEnter={handleEnterKeyPress}
+          // onEnter={handleEnterKeyPress}
           cleanOnEnter
           ref={inputRef}
         />
         <button
           className="send-btn"
-          onClick={() =>
-            sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
-          }
+          // onClick={() =>
+          //   sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
+          // }
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

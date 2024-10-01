@@ -5,17 +5,23 @@ import InputEmoji from "react-input-emoji";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
+import { ChatV2Context } from "../../context/ChatV2Context";
+import useChatMessage from "../../hook/useChatMessage";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
-  const {
-    currentChat,
-    messages,
-    isMessagesLoading,
-    sendTextMessage,
-    notifications,
-    updateCurrentChat,
-  } = useContext(ChatContext);
+  // const {
+  //   currentChat,
+  //   messages,
+  //   isMessagesLoading,
+  //   sendTextMessage,
+  //   notifications,
+  //   updateCurrentChat,
+  // } = useContext(ChatContext);
+  const { currentChat, updateCurrentChat } = useContext(ChatV2Context);
+
+  const { chatMessages, isFetchingMessages } = useChatMessage(currentChat);
+
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
@@ -23,13 +29,7 @@ const ChatBox = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, currentChat, notifications]);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputRef]);
+  }, [chatMessages, currentChat]);
 
   if (!user || !currentChat) return;
 
@@ -42,15 +42,15 @@ const ChatBox = () => {
       </p>
     );
   }
-  if (isMessagesLoading) {
+  if (isFetchingMessages) {
     return (
       <p style={{ textAlign: "center", width: "100%" }}>Loading Chat...</p>
     );
   }
 
-  const handleEnterKeyPress = (currentText: string) => {
-    sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
-  };
+  // const handleEnterKeyPress = (currentText: string) => {
+  //   sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
+  // };
 
   return (
     <Stack gap={4} className="chat-box">
@@ -71,8 +71,8 @@ const ChatBox = () => {
         </strong>
       </div>
       <Stack gap={3} className="messages">
-        {messages &&
-          messages.map((message, index) => {
+        {chatMessages &&
+          chatMessages.map((message, index) => {
             return (
               <Stack
                 ref={messagesEndRef}
@@ -100,15 +100,15 @@ const ChatBox = () => {
           borderColor="rgba(72,112,223,0.2)"
           shouldReturn
           shouldConvertEmojiToImage={false}
-          onEnter={handleEnterKeyPress}
+          // onEnter={handleEnterKeyPress}
           cleanOnEnter
           ref={inputRef}
         />
         <button
           className="send-btn"
-          onClick={() =>
-            sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
-          }
+          // onClick={() =>
+          //   sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
+          // }
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

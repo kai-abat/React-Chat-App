@@ -1,28 +1,14 @@
-import { useEffect, useState } from "react";
-import { ChatInfoType } from "../types/ChatTypes";
+import { ChatModelType, UserModelType } from "../types/MongoDBModelTypes";
 import { UserInfoType } from "../types/UserTypes";
 
 export const useFetchRecipientUser = (
-  chat: ChatInfoType | null,
+  chat: ChatModelType | null,
   user: UserInfoType | null
 ) => {
-  const [recipientUser, setRecipientUser] = useState<UserInfoType | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  let recipientUser: UserModelType | undefined;
 
-  useEffect(() => {
-    const getUser = async () => {
-      if (!user || !chat) return null;
-
-      const recipientUser = chat?.members.find((m) => m._id !== user._id);
-
-      if (!recipientUser) return setError("No recipient found");
-
-      setRecipientUser(recipientUser);
-    };
-    getUser();
-  }, [chat, user]);
-
-  if (!user || !chat) return { recipientUser: null };
-
-  return { recipientUser, error };
+  if (chat && !chat.isGroupChat) {
+    recipientUser = chat.members.find((m) => m._id !== user?._id);
+  }
+  return { recipientUser };
 };

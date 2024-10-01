@@ -13,6 +13,7 @@ const createChat = async (req, res) => {
   const { userIds } = req.body;
 
   try {
+    const admin = userIds[0];
     const chat = await chatModel
       .findOne({
         members: { $all: userIds },
@@ -25,6 +26,7 @@ const createChat = async (req, res) => {
 
     const newChat = new chatModel({
       members: userIds,
+      groupChatAdmin: [admin],
     });
 
     let response = await newChat.save();
