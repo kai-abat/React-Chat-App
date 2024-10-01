@@ -31,7 +31,6 @@ export const getChatMessage = async (
   url: string
 ): Promise<MessagesModelType[]> => {
   // get chat message
-  console.log("getChatMessage:", chatId, url);
   if (!chatId) throw new Error("No chat id provided");
 
   const token = localStorage.getItem("Gchat_Token");
@@ -43,7 +42,34 @@ export const getChatMessage = async (
     },
   });
   const data = await response.json();
-  console.log("getChatMessage data:", data);
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
+type SendTextMsgArgs = {
+  url: string;
+  body: string;
+};
+
+export const sendTextMessage = async (
+  args: SendTextMsgArgs
+): Promise<MessagesModelType> => {
+  const token = localStorage.getItem("Gchat_Token");
+  const body = args.body;
+  const response = await fetch(`${args.url}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body,
+  });
+
+  const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message);

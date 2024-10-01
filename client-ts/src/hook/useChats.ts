@@ -1,7 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatV2Context } from "../context/ChatV2Context";
-import { useQuery } from "@tanstack/react-query";
 import { getUserChat } from "../services/chatService";
 
 const useChats = () => {

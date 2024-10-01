@@ -3,10 +3,9 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
 import { AuthContext } from "../../context/AuthContext";
-import { ChatContext } from "../../context/ChatContext";
-import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 import { ChatV2Context } from "../../context/ChatV2Context";
 import useChatMessage from "../../hook/useChatMessage";
+import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
@@ -18,9 +17,11 @@ const ChatBox = () => {
   //   notifications,
   //   updateCurrentChat,
   // } = useContext(ChatContext);
-  const { currentChat, updateCurrentChat } = useContext(ChatV2Context);
+  const { currentChat, updateCurrentChat, messageURI } =
+    useContext(ChatV2Context);
 
-  const { chatMessages, isFetchingMessages } = useChatMessage(currentChat);
+  const { chatMessages, isFetchingMessages, sendTextMessageMutate } =
+    useChatMessage(currentChat);
 
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
@@ -48,9 +49,16 @@ const ChatBox = () => {
     );
   }
 
-  // const handleEnterKeyPress = (currentText: string) => {
-  //   sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
-  // };
+  const handleEnterKeyPress = (currentText: string) => {
+    const body = JSON.stringify({
+      senderId: user._id,
+      text: currentText,
+      chatId: currentChat._id,
+    });
+    sendTextMessageMutate({ url: messageURI, body: body });
+    setTextMessage("");
+    // sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
+  };
 
   return (
     <Stack gap={4} className="chat-box">
@@ -72,6 +80,7 @@ const ChatBox = () => {
       </div>
       <Stack gap={3} className="messages">
         {chatMessages &&
+          chatMessages.length > 0 &&
           chatMessages.map((message, index) => {
             return (
               <Stack
@@ -100,15 +109,13 @@ const ChatBox = () => {
           borderColor="rgba(72,112,223,0.2)"
           shouldReturn
           shouldConvertEmojiToImage={false}
-          // onEnter={handleEnterKeyPress}
+          onEnter={handleEnterKeyPress}
           cleanOnEnter
           ref={inputRef}
         />
         <button
           className="send-btn"
-          // onClick={() =>
-          //   sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
-          // }
+          onClick={() => handleEnterKeyPress(textMessage)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

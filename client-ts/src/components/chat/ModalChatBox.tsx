@@ -26,9 +26,10 @@ const ModalChatBox = () => {
     onShowChatBox,
     isShowChatBox,
     updateCurrentChat,
+    messageURI,
   } = useContext(ChatV2Context);
 
-  const { chatMessages } = useChatMessage(currentChat);
+  const { chatMessages, sendTextMessageMutate } = useChatMessage(currentChat);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
@@ -47,9 +48,16 @@ const ModalChatBox = () => {
 
   if (!user || !currentChat) return;
 
-  // const handleEnterKeyPress = (currentText: string) => {
-  //   sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
-  // };
+  const handleEnterKeyPress = (currentText: string) => {
+    const body = JSON.stringify({
+      senderId: user._id,
+      text: currentText,
+      chatId: currentChat._id,
+    });
+    sendTextMessageMutate({ url: messageURI, body: body });
+    setTextMessage("");
+    // sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
+  };
 
   return (
     <Modal
@@ -64,6 +72,7 @@ const ModalChatBox = () => {
       <Modal.Body>
         <Stack gap={3} className="modal-body-messages">
           {chatMessages &&
+            chatMessages.length > 0 &&
             chatMessages.map((message, index) => {
               return (
                 <Stack
@@ -93,15 +102,13 @@ const ModalChatBox = () => {
           borderColor="rgba(72,112,223,0.2)"
           shouldReturn
           shouldConvertEmojiToImage={false}
-          // onEnter={handleEnterKeyPress}
+          onEnter={handleEnterKeyPress}
           cleanOnEnter
           ref={inputRef}
         />
         <button
           className="send-btn"
-          // onClick={() =>
-          //   sendTextMessage(textMessage, user, currentChat?._id, setTextMessage)
-          // }
+          onClick={() => handleEnterKeyPress(textMessage)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
