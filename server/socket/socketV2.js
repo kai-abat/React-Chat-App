@@ -8,37 +8,72 @@ const socketStart = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("Connected to socket.io");
+    console.log("Connected to socket.io: " + socket.id);
+
     socket.on("setup", (userData) => {
       socket.join(userData._id);
+      console.log("Connected " + userData._id);
       socket.emit("connected");
     });
 
-    socket.on("join chat", (room) => {
-      socket.join(room);
-      console.log("User Joined Room: " + room);
+    socket.on("join-room", (data) => {
+      const { userName, room } = data;
+      socket.join(room); // setup => userData._id
+      console.log(`User ${userName} Joined Room: ${room}`);
+      const roomList = socket.rooms;
+      console.log("roomList", roomList);
     });
 
-    socket.on("typing", (room) => socket.in(room).emit("typing"));
+    // socket.on("leave-room", (data) => {
+    //   const { userName, room } = data;
+    //   socket.leave(room); // setup => userData._id
+    //   console.log(`User ${userName} Leaved the Room: ${room}`);
+    //   const roomList = socket.rooms;
 
-    socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+    //   const d = typeof roomList;
+    //   console.log("roomList", roomList.length, d);
+    // });
 
-    socket.on("new message", (newMessageRecieved) => {
-      var chat = newMessageRecieved.chat;
+    socket.on("typing", (room) => {
+      console.log("typing........", room);
+      socket.in(room).emit("typing");
+    });
 
-      if (!chat.users) return console.log("chat.users not defined");
+    socket.on("stop-typing", (room) => socket.in(room).emit("stop-typing"));
 
-      chat.users.forEach((user) => {
-        if (user._id == newMessageRecieved.sender._id) return;
+    /* {
+      _id: string;
+      chatId: ChatModelType;
+      senderId: UserModelType;
+      text: string;
+      readBy: {
+        _id: string;
+        name: string;
+        email: string;
+        createdAt: string;
+        updatedAt: string;
+      }
+      createdAt: string;
+      updatedAt: string;
+    } */
 
-        socket.in(user._id).emit("message recieved", newMessageRecieved);
+    socket.on("send-message", (data) => {
+      const newMessage = data.newMessage;
+      const chat = data.chat;
+
+      if (!chat.members) return console.log("chat.users not defined");
+
+      chat.members.forEach((user) => {
+        if (user._id === newMessage.senderId._id) return;
+
+        socket.in(user._id).emit("receive-message", chat, newMessage);
       });
     });
 
-    socket.off("setup", (userData) => {
-      console.log("USER DISCONNECTED");
-      socket.leave(userData._id);
-    });
+    // socket.off("setup", (userData) => {
+    //   console.log("USER DISCONNECTED");
+    //   socket.leave(userData._id);
+    // });
   });
 };
 

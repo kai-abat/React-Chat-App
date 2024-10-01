@@ -6,6 +6,7 @@ const chatRoute = require("./route/chatRoute");
 const messageRoute = require("./route/messageRoute");
 const path = require("path");
 const { protect } = require("./auth/auth");
+const { socketStart } = require("./socket/socketV2");
 
 require("dotenv").config(); // config env variables
 
@@ -77,16 +78,17 @@ app.get("/", (req, res) => {
   res.send("Welcome to our chat app APIs");
 });
 
-// const server = app.listen(port, () => {
-//   console.log("Running in local: http://localhost:" + port);
-// });
-
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log("Running in local: http://localhost:" + port);
 });
+
+// app.listen(port, () => {
+//   console.log("Running in local: http://localhost:" + port);
+// });
 
 // ------------------------- socket.io ------------------------------
 
 // socketStart(server);
 
+socketStart(server);
 // ------------------------- socket.io ------------------------------

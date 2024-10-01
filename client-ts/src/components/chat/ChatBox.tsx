@@ -17,20 +17,36 @@ const ChatBox = () => {
   //   notifications,
   //   updateCurrentChat,
   // } = useContext(ChatContext);
-  const { currentChat, updateCurrentChat, messageURI } =
-    useContext(ChatV2Context);
+  const {
+    currentChat,
+    updateCurrentChat,
+    messageURI,
+    setCurrentMessages,
+    currentMessages,
+    newMessage,
+    setTyping,
+    isTyping,
+    textMessage,
+    setTextMessage,
+  } = useContext(ChatV2Context);
 
   const { chatMessages, isFetchingMessages, sendTextMessageMutate } =
     useChatMessage(currentChat);
 
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
-  const [textMessage, setTextMessage] = useState<string>("");
+
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<null | HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!chatMessages) return;
+    setCurrentMessages(chatMessages);
+  }, [chatMessages, setCurrentMessages]);
+
+  useEffect(() => {
+    console.log("newMessage:", newMessage);
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, currentChat]);
+  }, [newMessage, currentMessages, currentChat]);
 
   if (!user || !currentChat) return;
 
@@ -55,11 +71,25 @@ const ChatBox = () => {
       text: currentText,
       chatId: currentChat._id,
     });
+
+    // display new message imeddiatly to the current message screen
+
     sendTextMessageMutate({ url: messageURI, body: body });
     setTextMessage("");
+
+    // if (socketConnected) {
+    //   socket?.emit("stop-typing", recipientUser._id);
+    //   setTyping(false);
+    // }
     // sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
   };
 
+  const handleOnChangeTextMsg = (e: string) => {
+    setTyping(true);
+    setTextMessage(e);
+  };
+
+  console.log("ChatBox isTyping: ", isTyping);
   return (
     <Stack gap={4} className="chat-box">
       <div className="chat-header">
@@ -79,12 +109,11 @@ const ChatBox = () => {
         </strong>
       </div>
       <Stack gap={3} className="messages">
-        {chatMessages &&
-          chatMessages.length > 0 &&
-          chatMessages.map((message, index) => {
+        {currentMessages &&
+          currentMessages.length > 0 &&
+          currentMessages.map((message, index) => {
             return (
               <Stack
-                ref={messagesEndRef}
                 key={index}
                 className={`${
                   message.senderId._id === user._id
@@ -99,12 +128,14 @@ const ChatBox = () => {
               </Stack>
             );
           })}
-        {/* <div ref={messagesEndRef} /> */}
+        {isTyping && <div>Typing....</div>}
+
+        <div ref={messagesEndRef}></div>
       </Stack>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
         <InputEmoji
           value={textMessage}
-          onChange={setTextMessage}
+          onChange={(e) => handleOnChangeTextMsg(e)}
           fontFamily="nunito"
           borderColor="rgba(72,112,223,0.2)"
           shouldReturn

@@ -1,6 +1,14 @@
-import { createContext, ReactNode, useCallback, useState } from "react";
-import { ChatModelType } from "../types/MongoDBModelTypes";
-import useChatMessage from "../hook/useChatMessage";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { io, Socket } from "socket.io-client";
+import { ChatModelType, MessagesModelType } from "../types/MongoDBModelTypes";
+import { AuthContext } from "./AuthContext";
 
 export const ENDPOINT = "http://localhost:5000";
 // export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; // -> After deployment
@@ -13,10 +21,21 @@ interface ChatV2ContextType {
   userChats: ChatModelType[];
   currentChat: ChatModelType | null;
   isShowChatBox: boolean;
+  currentMessages: MessagesModelType[];
+  newMessage: MessagesModelType | null;
+  socket: Socket<any, any> | null;
+  socketConnected: boolean;
+  typing: boolean;
+  isTyping: boolean;
+  textMessage: string;
   setUserChats: React.Dispatch<React.SetStateAction<ChatModelType[]>>;
   updateCurrentChat: (chat: ChatModelType | null) => void;
   onShowChatBox: () => void;
   onCloseChatBox: () => void;
+  setCurrentMessages: React.Dispatch<React.SetStateAction<MessagesModelType[]>>;
+  setNewMessage: React.Dispatch<React.SetStateAction<MessagesModelType | null>>;
+  setTyping: React.Dispatch<React.SetStateAction<boolean>>;
+  setTextMessage: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ChatV2Context = createContext<ChatV2ContextType>(
@@ -28,20 +47,141 @@ export const ChatV2ContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const { user } = useContext(AuthContext);
   // States
   const [userChats, setUserChats] = useState<ChatModelType[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatModelType | null>(null);
+  const [currentMessages, setCurrentMessages] = useState<MessagesModelType[]>(
+    []
+  );
+  const [newMessage, setNewMessage] = useState<MessagesModelType | null>(null);
 
   // State for chatbox open and close
   const [isShowChatBox, setIsShowChatBox] = useState<boolean>(false);
+  const [textMessage, setTextMessage] = useState<string>("");
+
+  // State for socket.io
+  const [socket, setSocket] = useState<Socket<any> | null>(null);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const baseURI = ENDPOINT + "/api";
   const chatURI = baseURI + "/chats";
   const messageURI = baseURI + "/messages";
 
-  // User Chat/Contact List -------------------------------------
+  // Socket.io Start Section ------------------------------------
 
-  // get chat
+  // initialize socket
+  useEffect(() => {
+    if (!user) return;
+    const newSocket = io(ENDPOINT);
+    setSocket(newSocket);
+
+    newSocket.emit("setup", user);
+    newSocket.on("connected", () => {
+      setSocketConnected(true);
+    });
+    newSocket.on("typing", () => {
+      console.log("recipient is now typing....");
+      setIsTyping(true);
+    });
+    newSocket.on("stop-typing", () => {
+      console.log("recipient is now STOP typing....");
+      setIsTyping(false);
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [user]);
+
+  // Join room
+  useEffect(() => {
+    if (!socket || !user || !currentChat) return;
+
+    // socket.io selected chat join room
+    const recipient = currentChat.members.find((m) => m._id !== user._id);
+
+    if (recipient) {
+      socket.emit("join-room", { userName: user.name, room: recipient?._id });
+    }
+  }, [socket, user, currentChat]);
+
+  // socket.io send message to the server using socket
+  useEffect(() => {
+    if (!socket || !user || !currentChat || !newMessage) return;
+
+    socket.emit("send-message", {
+      newMessage,
+      chat: currentChat,
+    });
+    setNewMessage(null);
+  }, [newMessage, socket, user, currentChat]);
+
+  // socket.io recieved message
+  useEffect(() => {
+    if (!socket || !user || !currentChat) return;
+
+    console.log("recieved message currentChat:", currentChat);
+
+    socket.on(
+      "receive-message",
+      (chat: ChatModelType, newMessage: MessagesModelType) => {
+        if (currentChat._id === chat._id) {
+          console.log("receive message from: ", currentChat, chat, newMessage);
+          setCurrentMessages([...currentMessages, newMessage]);
+        } else {
+          // show notification
+          console.log(
+            "New Message notification from:",
+            currentChat,
+            chat,
+            newMessage
+          );
+        }
+      }
+    );
+  }, [socket, user, currentChat, currentMessages]);
+
+  useEffect(() => {
+    if (currentChat && user && typing) {
+      const recipient = currentChat.members.find((m) => m._id !== user._id);
+
+      console.log("handleOnChangeTextMsg:", typing, textMessage);
+
+      if (socketConnected) {
+        socket?.emit("typing", recipient?._id);
+        // add debounce to know user not typing anymore
+        const lastTypingTime = new Date().getTime();
+        const timerLength = 10000;
+        setTimeout(() => {
+          const timeNow = new Date().getTime();
+          const timeDiff = timeNow - lastTypingTime;
+          if (timeDiff >= timerLength && typing) {
+            socket?.emit("stop-typing", recipient?._id);
+            setTyping(false);
+            console.log("stop-typing!!!");
+          }
+        }, timerLength);
+      }
+    }
+  }, [typing, textMessage, currentChat, socket, socketConnected, user]);
+
+  // const broadcastNewTextMesage = useCallback(
+  //   (newMessage: MessagesModelType) => {
+  //     if (socket) {
+  //       socket.emit("new message", newMessage);
+  //     }
+  //   },
+  //   []
+  // );
+
+  // Socket.io End Section --------------------------------------
+
+  // User Chat/Contact List -------------------------------------
+  // Note: Go to custom hook useChat, useChatMessage
+  // for data fetching and mutation handling
 
   // create chat
 
@@ -49,8 +189,17 @@ export const ChatV2ContextProvider = ({
 
   // selecting chat wiil show chat box
   const updateCurrentChat = useCallback((chat: ChatModelType | null) => {
+    // if (user && socket && chat?._id !== currentChat?._id && currentChat) {
+    //   // leave room
+    //   socket.emit("leave-room", {
+    //     userName: user.name,
+    //     room: currentChat._id,
+    //   });
+    // }
     setCurrentChat(chat);
   }, []);
+
+  // update current chat
 
   // User Chat/Contact List -------------------------------------
 
@@ -72,10 +221,21 @@ export const ChatV2ContextProvider = ({
         messageURI,
         currentChat,
         isShowChatBox,
+        currentMessages,
+        newMessage,
+        socket,
+        socketConnected,
+        typing,
+        isTyping,
+        textMessage,
         setUserChats,
         updateCurrentChat,
         onShowChatBox,
         onCloseChatBox,
+        setCurrentMessages,
+        setNewMessage,
+        setTyping,
+        setTextMessage,
       }}
     >
       {children}

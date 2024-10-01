@@ -52,7 +52,7 @@ const createMessage = async (req, res) => {
       chatId: chatId,
       messageId: saveMessage._id,
     };
-    const doc = await latestMessageModel.findOneAndUpdate(
+    await latestMessageModel.findOneAndUpdate(
       { chatId: chatId },
       latestMessageData,
       {
@@ -60,8 +60,6 @@ const createMessage = async (req, res) => {
         upsert: true,
       }
     );
-
-    console.log("latest message:", doc);
 
     res.status(200).json(saveMessage);
   } catch (error) {

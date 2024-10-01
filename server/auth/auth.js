@@ -20,43 +20,35 @@ const matchPassword = async (enteredPassword, oldPassword) => {
 
 const protect = async (req, res, next) => {
   try {
+    const originalUrl = req.originalUrl;
     let token = "";
+
+    // skip auth on socket.io temporary while looking for better solution
+    if (originalUrl.startsWith("/socket.io")) {
+      return next();
+    }
+
     const authUrl = ["/api/users/login", "/api/users/register"];
 
-    console.log("middleware protect start...");
+    // console.log("middleware protect start...");
     // console.log(req);
-
-    const url = req.url;
-    const baseUrl = req.baseUrl;
-    const originalUrl = req.originalUrl;
-    const pathname = req._parsedUrl.pathname;
-    console.log(
-      "url",
-      url,
-      "baseUrl",
-      baseUrl,
-      "originalUrl",
-      originalUrl,
-      "pathname",
-      pathname
-    );
 
     const headerAuth = req.headers.authorization;
     // console.log("headerAuth", headerAuth);
 
     // skip authentication if login or registration
-    if (authUrl.includes(originalUrl)) {
-      console.log("Url is for authorization: ", originalUrl);
+    if (authUrl.includes(originalUrl) || originalUrl.startsWith("/socket.io")) {
+      // console.log("Url is for authorization: ", originalUrl);
       return next();
     }
 
-    console.log("checking bearer token...");
+    // console.log("checking bearer token...");
     if (headerAuth && headerAuth.startsWith("Bearer")) {
       token = headerAuth.split(" ")[1];
       if (!token) {
         throw new Error("Not authorized");
       }
-      console.log("token", token);
+      // console.log("token", token);
 
       const authUser = jwt.verify(
         token,
@@ -77,9 +69,9 @@ const protect = async (req, res, next) => {
       req.user = await userModel
         .findById(authUser.user._id)
         .select("-password");
-      console.log("Found user: ", req.user);
+      // console.log("Found user: ", req.user);
 
-      console.log("middleware protect finish...");
+      // console.log("middleware protect finish...");
       return next();
     }
 

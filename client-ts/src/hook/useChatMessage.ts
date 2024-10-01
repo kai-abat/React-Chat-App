@@ -10,7 +10,8 @@ import { getChatMessage, sendTextMessage } from "../services/chatService";
 import { ChatModelType } from "../types/MongoDBModelTypes";
 
 const useChatMessage = (chat: ChatModelType | null) => {
-  const { messageURI } = useContext(ChatV2Context);
+  const { messageURI, setNewMessage, setCurrentMessages } =
+    useContext(ChatV2Context);
   const queryClient = useQueryClient();
 
   const {
@@ -24,11 +25,14 @@ const useChatMessage = (chat: ChatModelType | null) => {
 
   const { mutate: sendTextMessageMutate } = useMutation({
     mutationFn: sendTextMessage,
-    onSuccess: (message) => {
+    onSuccess: (newMessage) => {
       if (chat) {
-        queryClient.invalidateQueries({
-          queryKey: ["Current_Chat_Messages", chat._id],
-        });
+        setNewMessage(newMessage);
+        setCurrentMessages((prev) => (prev = [...prev, newMessage]));
+        // no need to invalidate since we're going to use socket.io
+        // queryClient.invalidateQueries({
+        //   queryKey: ["Current_Chat_Messages", chat._id],
+        // });
       }
     },
   });
