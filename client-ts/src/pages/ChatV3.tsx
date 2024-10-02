@@ -1,16 +1,16 @@
 import { useContext, useEffect } from "react";
 import { Stack } from "react-bootstrap";
+import ChatBox from "../components/chat/ChatBox";
 import ChatControls from "../components/chat/ChatControls";
 import CreateGroupChatModal from "../components/chat/CreateGroupChatModal";
-import ModalChatBox from "../components/chat/ModalChatBox";
+import ModalChatBoxV2 from "../components/chat/ModalChatBoxV2";
 import NavChat from "../components/chat/NavChat";
+import UserChatV3 from "../components/chat/UserChatV3";
 import Layout from "../components/Layout";
 import { AuthContext } from "../context/AuthContext";
 import { ChatV2Context } from "../context/ChatV2Context";
 import useChats from "../hook/useChats";
 import useWindowDimensions from "../hook/useWindowDimensions";
-import UserChatV3 from "../components/chat/UserChatV3";
-import ChatBox from "../components/chat/ChatBox";
 
 // Version 3
 const ChatV3 = () => {
@@ -57,7 +57,7 @@ const ChatV3 = () => {
               <ChatBox />
             </Layout.Content>
           )}
-          {dimensions.width <= 991 && <ModalChatBox />}
+          {dimensions.width <= 991 && <ModalChatBoxV2 />}
         </>
       )}
 

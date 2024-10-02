@@ -6,8 +6,9 @@ import { AuthContext } from "../../context/AuthContext";
 import { ChatV2Context } from "../../context/ChatV2Context";
 import useChatMessage from "../../hook/useChatMessage";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
+import ChatBoxHeader from "./ChatBoxHeader";
 
-const ChatBox = () => {
+const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
   const { user } = useContext(AuthContext);
 
   const {
@@ -95,22 +96,12 @@ const ChatBox = () => {
 
   return (
     <Stack gap={4} className="chat-box">
-      <div className="chat-header">
-        <strong>{recipientUser.name}</strong>
-        {/* close chat-box */}
-        <strong className="chat-close" onClick={() => updateCurrentChat(null)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className="bi bi-x-lg"
-            viewBox="0 0 16 16"
-          >
-            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-          </svg>
-        </strong>
-      </div>
+      {showHeader && (
+        <ChatBoxHeader
+          name={recipientUser.name}
+          closeHandler={updateCurrentChat}
+        />
+      )}
       <Stack gap={3} className="messages">
         {currentMessages &&
           currentMessages.length > 0 &&
