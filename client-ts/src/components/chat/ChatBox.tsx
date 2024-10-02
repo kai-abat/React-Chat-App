@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
 import { AuthContext } from "../../context/AuthContext";
@@ -9,14 +9,7 @@ import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 
 const ChatBox = () => {
   const { user } = useContext(AuthContext);
-  // const {
-  //   currentChat,
-  //   messages,
-  //   isMessagesLoading,
-  //   sendTextMessage,
-  //   notifications,
-  //   updateCurrentChat,
-  // } = useContext(ChatContext);
+
   const {
     currentChat,
     updateCurrentChat,
@@ -25,9 +18,11 @@ const ChatBox = () => {
     currentMessages,
     newMessage,
     setTyping,
+    typing,
     isTyping,
     textMessage,
     setTextMessage,
+    socketConnected,
   } = useContext(ChatV2Context);
 
   const { chatMessages, isFetchingMessages, sendTextMessageMutate } =
@@ -46,7 +41,7 @@ const ChatBox = () => {
   useEffect(() => {
     console.log("newMessage:", newMessage);
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [newMessage, currentMessages, currentChat]);
+  }, [newMessage, currentMessages, currentChat, isTyping]);
 
   if (!user || !currentChat) return;
 
@@ -85,11 +80,19 @@ const ChatBox = () => {
   };
 
   const handleOnChangeTextMsg = (e: string) => {
-    setTyping(true);
     setTextMessage(e);
+
+    if (socketConnected && !typing) {
+      setTyping(true);
+    }
   };
 
-  console.log("ChatBox isTyping: ", isTyping);
+  let typingMessage = "";
+  if (isTyping) {
+    console.log("Recipient is now typing something....");
+    typingMessage = "is now typing something....";
+  }
+
   return (
     <Stack gap={4} className="chat-box">
       <div className="chat-header">
@@ -128,9 +131,8 @@ const ChatBox = () => {
               </Stack>
             );
           })}
-        {isTyping && <div>Typing....</div>}
 
-        <div ref={messagesEndRef}></div>
+        <div ref={messagesEndRef}>{typingMessage}</div>
       </Stack>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
         <InputEmoji

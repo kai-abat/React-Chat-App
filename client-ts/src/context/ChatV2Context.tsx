@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
@@ -59,6 +60,7 @@ export const ChatV2ContextProvider = ({
   // State for chatbox open and close
   const [isShowChatBox, setIsShowChatBox] = useState<boolean>(false);
   const [textMessage, setTextMessage] = useState<string>("");
+  const lastTypingTime = useRef(0);
 
   // State for socket.io
   const [socket, setSocket] = useState<Socket<any> | null>(null);
@@ -144,27 +146,26 @@ export const ChatV2ContextProvider = ({
     );
   }, [socket, user, currentChat, currentMessages]);
 
+  // socket.io typing status message
   useEffect(() => {
-    if (currentChat && user && typing) {
+    if (socketConnected && currentChat && user && typing) {
       const recipient = currentChat.members.find((m) => m._id !== user._id);
+      const time = new Date().getTime();
+      console.log("handleOnChangeTextMsg:", typing, time, textMessage);
+      lastTypingTime.current = time;
+      socket?.emit("typing", recipient?._id);
 
-      console.log("handleOnChangeTextMsg:", typing, textMessage);
-
-      if (socketConnected) {
-        socket?.emit("typing", recipient?._id);
-        // add debounce to know user not typing anymore
-        const lastTypingTime = new Date().getTime();
-        const timerLength = 10000;
-        setTimeout(() => {
-          const timeNow = new Date().getTime();
-          const timeDiff = timeNow - lastTypingTime;
-          if (timeDiff >= timerLength && typing) {
-            socket?.emit("stop-typing", recipient?._id);
-            setTyping(false);
-            console.log("stop-typing!!!");
-          }
-        }, timerLength);
-      }
+      const timerLength = 10000;
+      setTimeout(() => {
+        const timeNow = new Date().getTime();
+        const timeDiff = timeNow - lastTypingTime.current;
+        if (timeDiff >= timerLength && typing) {
+          console.log("Stopping typin now:", timeDiff);
+          socket?.emit("stop-typing", recipient?._id);
+          setTyping(false);
+          console.log("stop-typing!!!");
+        }
+      }, timerLength);
     }
   }, [typing, textMessage, currentChat, socket, socketConnected, user]);
 

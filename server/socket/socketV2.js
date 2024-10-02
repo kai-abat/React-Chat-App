@@ -24,16 +24,6 @@ const socketStart = (server) => {
       console.log("roomList", roomList);
     });
 
-    // socket.on("leave-room", (data) => {
-    //   const { userName, room } = data;
-    //   socket.leave(room); // setup => userData._id
-    //   console.log(`User ${userName} Leaved the Room: ${room}`);
-    //   const roomList = socket.rooms;
-
-    //   const d = typeof roomList;
-    //   console.log("roomList", roomList.length, d);
-    // });
-
     socket.on("typing", (room) => {
       console.log("typing........", room);
       socket.in(room).emit("typing");
