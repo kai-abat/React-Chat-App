@@ -149,6 +149,7 @@ body {
 
 /* Chat Box */
 .chat-box {
+  position: relative;
   overflow-y: auto;
   height: 100%;
   background: var(--main-bg-color);
@@ -194,6 +195,13 @@ body {
 .messages {
   overflow-y: auto;
   padding: 0 2rem;
+}
+
+.messages .typing-wrapper {
+  /* background: red; */
+  position: absolute;
+  bottom: 90px;
+  right: 50%;
 }
 
 .modal-body-messages {

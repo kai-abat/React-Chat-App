@@ -7,6 +7,7 @@ import { ChatV2Context } from "../../context/ChatV2Context";
 import useChatMessage from "../../hook/useChatMessage";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 import ChatBoxHeader from "./ChatBoxHeader";
+import Typing from "../lottie/Typing";
 
 const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
   const { user } = useContext(AuthContext);
@@ -41,7 +42,7 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
 
   useEffect(() => {
     console.log("newMessage:", newMessage);
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   }, [newMessage, currentMessages, currentChat, isTyping]);
 
   if (!user || !currentChat) return;
@@ -88,12 +89,6 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
     }
   };
 
-  let typingMessage = "";
-  if (isTyping) {
-    console.log("Recipient is now typing something....");
-    typingMessage = "is now typing something....";
-  }
-
   return (
     <Stack gap={4} className="chat-box">
       {showHeader && (
@@ -123,7 +118,13 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
             );
           })}
 
-        <div ref={messagesEndRef}>{typingMessage}</div>
+        {isTyping && (
+          <Stack direction="horizontal" className="typing-wrapper">
+            <Typing />
+          </Stack>
+        )}
+
+        <div ref={messagesEndRef}></div>
       </Stack>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
         <InputEmoji

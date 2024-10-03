@@ -71,6 +71,7 @@ export const ChatV2ContextProvider = ({
   const baseURI = ENDPOINT + "/api";
   const chatURI = baseURI + "/chats";
   const messageURI = baseURI + "/messages";
+  const timerLength = 5000;
 
   // Socket.io Start Section ------------------------------------
 
@@ -103,11 +104,7 @@ export const ChatV2ContextProvider = ({
     if (!socket || !user || !currentChat) return;
 
     // socket.io selected chat join room
-    const recipient = currentChat.members.find((m) => m._id !== user._id);
-
-    if (recipient) {
-      socket.emit("join-room", { userName: user.name, room: recipient?._id });
-    }
+    socket.emit("join-room", { userName: user.name, room: currentChat._id });
   }, [socket, user, currentChat]);
 
   // socket.io send message to the server using socket
@@ -155,7 +152,6 @@ export const ChatV2ContextProvider = ({
       lastTypingTime.current = time;
       socket?.emit("typing", recipient?._id);
 
-      const timerLength = 10000;
       setTimeout(() => {
         const timeNow = new Date().getTime();
         const timeDiff = timeNow - lastTypingTime.current;

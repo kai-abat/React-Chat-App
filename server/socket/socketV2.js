@@ -25,11 +25,12 @@ const socketStart = (server) => {
     });
 
     socket.on("typing", (room) => {
-      console.log("typing........", room);
       socket.in(room).emit("typing");
     });
 
-    socket.on("stop-typing", (room) => socket.in(room).emit("stop-typing"));
+    socket.on("stop-typing", (room) => {
+      socket.in(room).emit("stop-typing");
+    });
 
     /* {
       _id: string;
@@ -60,10 +61,10 @@ const socketStart = (server) => {
       });
     });
 
-    // socket.off("setup", (userData) => {
-    //   console.log("USER DISCONNECTED");
-    //   socket.leave(userData._id);
-    // });
+    socket.off("setup", (userData) => {
+      console.log("USER DISCONNECTED");
+      socket.leave(userData._id);
+    });
   });
 };
 
