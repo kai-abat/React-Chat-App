@@ -86,11 +86,9 @@ export const ChatV2ContextProvider = ({
       setSocketConnected(true);
     });
     newSocket.on("typing", () => {
-      console.log("recipient is now typing....");
       setIsTyping(true);
     });
     newSocket.on("stop-typing", () => {
-      console.log("recipient is now STOP typing....");
       setIsTyping(false);
     });
 
@@ -127,9 +125,10 @@ export const ChatV2ContextProvider = ({
     socket.on(
       "receive-message",
       (chat: ChatModelType, newMessage: MessagesModelType) => {
+        console.log("socket receive-message currentChat:...", currentChat);
         if (currentChat._id === chat._id) {
           console.log("receive message from: ", currentChat, chat, newMessage);
-          setCurrentMessages([...currentMessages, newMessage]);
+          setCurrentMessages((prev) => (prev = [...prev, newMessage]));
         } else {
           // show notification
           console.log(
@@ -141,14 +140,14 @@ export const ChatV2ContextProvider = ({
         }
       }
     );
-  }, [socket, user, currentChat, currentMessages]);
+  }, [socket, user, currentChat]);
 
   // socket.io typing status message
   useEffect(() => {
     if (socketConnected && currentChat && user && typing) {
       const recipient = currentChat.members.find((m) => m._id !== user._id);
       const time = new Date().getTime();
-      console.log("handleOnChangeTextMsg:", typing, time, textMessage);
+
       lastTypingTime.current = time;
       socket?.emit("typing", recipient?._id);
 
@@ -156,10 +155,8 @@ export const ChatV2ContextProvider = ({
         const timeNow = new Date().getTime();
         const timeDiff = timeNow - lastTypingTime.current;
         if (timeDiff >= timerLength && typing) {
-          console.log("Stopping typin now:", timeDiff);
           socket?.emit("stop-typing", recipient?._id);
           setTyping(false);
-          console.log("stop-typing!!!");
         }
       }, timerLength);
     }
@@ -186,13 +183,6 @@ export const ChatV2ContextProvider = ({
 
   // selecting chat wiil show chat box
   const updateCurrentChat = useCallback((chat: ChatModelType | null) => {
-    // if (user && socket && chat?._id !== currentChat?._id && currentChat) {
-    //   // leave room
-    //   socket.emit("leave-room", {
-    //     userName: user.name,
-    //     room: currentChat._id,
-    //   });
-    // }
     setCurrentChat(chat);
   }, []);
 

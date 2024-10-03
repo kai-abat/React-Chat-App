@@ -94,7 +94,7 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
       {showHeader && (
         <ChatBoxHeader
           name={recipientUser.name}
-          closeHandler={updateCurrentChat}
+          closeHandler={() => updateCurrentChat(null)}
         />
       )}
       <Stack gap={3} className="messages">
