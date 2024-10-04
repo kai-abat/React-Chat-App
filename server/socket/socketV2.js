@@ -11,54 +11,50 @@ const socketStart = (server) => {
     console.log("Connected to socket.io: " + socket.id);
 
     socket.on("setup", (userData) => {
+      console.log("Socket SETUP!!!");
       socket.join(userData._id);
       console.log("Connected " + userData._id);
       socket.emit("connected");
     });
 
     socket.on("join-room", (data) => {
+      console.log("Socket JOIN ROOM!!!");
       const { userName, room } = data;
       socket.join(room); // setup => userData._id
       console.log(`User ${userName} Joined Room: ${room}`);
-      const roomList = socket.rooms;
-      console.log("roomList", roomList);
     });
 
     socket.on("typing", (room) => {
-      socket.in(room).emit("typing");
+      socket.to(room).emit("typing", room);
     });
 
     socket.on("stop-typing", (room) => {
-      socket.in(room).emit("stop-typing");
+      socket.to(room).emit("stop-typing", room);
     });
 
-    /* {
-      _id: string;
-      chatId: ChatModelType;
-      senderId: UserModelType;
-      text: string;
-      readBy: {
-        _id: string;
-        name: string;
-        email: string;
-        createdAt: string;
-        updatedAt: string;
-      }
-      createdAt: string;
-      updatedAt: string;
-    } */
-
     socket.on("send-message", (data) => {
+      console.log("Socket SEND MESSAGE!!!");
       const newMessage = data.newMessage;
       const chat = data.chat;
 
-      if (!chat.members) return console.log("chat.users not defined");
+      console.log("socket send-message:", newMessage.text, chat._id);
 
-      chat.members.forEach((user) => {
-        if (user._id === newMessage.senderId._id) return;
+      // if (!chat.members) return console.log("chat.users not defined");
 
-        socket.in(user._id).emit("receive-message", chat, newMessage);
-      });
+      const timeSent = new Date();
+      const isRead = false;
+
+      socket
+        .to(chat._id)
+        .emit("receive-message", chat, newMessage, isRead, timeSent);
+
+      // chat.members.forEach((user) => {
+      //   if (user._id === newMessage.senderId._id) return;
+
+      //   socket
+      //     .to(user._id)
+      //     .emit("receive-message", chat, newMessage, isRead, timeSent);
+      // });
     });
 
     socket.off("setup", (userData) => {

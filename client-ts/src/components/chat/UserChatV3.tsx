@@ -1,26 +1,32 @@
 import moment from "moment";
+import { useContext } from "react";
 import { Stack } from "react-bootstrap";
 import avatar from "../../assets/avatar.svg";
-import { useFetchLatestMessage } from "../../hook/useFetchLatestMessage";
-import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { ChatModelType } from "../../types/MongoDBModelTypes";
-import { UserInfoType } from "../../types/UserTypes";
-import { useContext } from "react";
 import { ChatV2Context } from "../../context/ChatV2Context";
+import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
+import { ChatsWithMsgModelType } from "../../types/MongoDBModelTypes";
+import { UserInfoType } from "../../types/UserTypes";
 
 // Component that display the user's with chat history
 const UserChatV3 = ({
-  chat,
+  chatWithMsg,
   user,
 }: {
-  chat: ChatModelType;
+  chatWithMsg: ChatsWithMsgModelType;
   user: UserInfoType;
 }) => {
   // const { onlineUsers, notifications } = useContext(ChatContext);
 
-  const { updateCurrentChat } = useContext(ChatV2Context);
+  const { chat, latestMessage } = chatWithMsg;
+
+  const {
+    updateCurrentChat,
+    notifications,
+    handleOnClickNotification,
+    onShowChatBox,
+  } = useContext(ChatV2Context);
   const { recipientUser } = useFetchRecipientUser(chat, user);
-  const { latestMessage } = useFetchLatestMessage(chat);
+  // const { latestMessage } = useFetchLatestMessage(chat);
 
   const isOnline = false;
   const numberOfNotification = 0;
@@ -39,10 +45,17 @@ const UserChatV3 = ({
   const numberOfNotification = recipientNotification.length; */
 
   const handleClickChat = () => {
-    updateCurrentChat(chat);
     // if (recipientUser) {
     //   markAsReadThisNotification(recipientUser);
     // }
+    const notification = notifications.find(
+      (n) => n.message.chatId._id === chat._id
+    );
+    if (notification) {
+      handleOnClickNotification(notification);
+    }
+    updateCurrentChat(chat);
+    onShowChatBox();
   };
 
   const truncateText = (text: string) => {

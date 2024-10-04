@@ -68,7 +68,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const user = localStorage.getItem("User");
     if (user) {
       setUser(JSON.parse(user));
-      console.log("useeffect: user:", user);
+      // console.log("useeffect: user:", user);
     }
     setIsLoading(false);
   }, []);
@@ -123,6 +123,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem("User");
+    localStorage.removeItem("Gchat_Token");
     setUser(null);
   }, []);
 

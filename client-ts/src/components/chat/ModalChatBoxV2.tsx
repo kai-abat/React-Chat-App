@@ -34,10 +34,7 @@ const ModalChatBoxV2 = () => {
       fullscreen="lg-down"
     >
       <Modal.Header>
-        <ChatBoxHeader
-          name={recipientUser.name}
-          closeHandler={updateCurrentChat}
-        />
+        <ChatBoxHeader name={recipientUser.name} showCloseButton={true} />
       </Modal.Header>
       <Modal.Body>
         <ChatBox showHeader={false} />

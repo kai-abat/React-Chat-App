@@ -1,5 +1,5 @@
 import {
-  ChatModelType,
+  ChatsWithMsgModelType,
   LatestMessageModelType,
   MessagesModelType,
 } from "../types/MongoDBModelTypes";
@@ -7,7 +7,7 @@ import {
 export const getUserChat = async (
   id: string | undefined,
   url: string
-): Promise<ChatModelType[]> => {
+): Promise<ChatsWithMsgModelType[]> => {
   if (!id) throw new Error("Not authorized");
   const token = localStorage.getItem("Gchat_Token");
 

@@ -26,31 +26,6 @@ app.use(cors());
 
 // middleware authorization
 app.use(protect);
-// app.use(async (req, res, next) => {
-//   let token;
-
-//   // auth using header bearer
-//   if (
-//     req.headers.authorization &&
-//     req.headers.authorization.startsWith("Bearer")
-//   ) {
-//     token = req.headers.authorization.split(" ")[1];
-
-//     const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-//     req.user = await userModel
-//       .findById(decodedToken._id)
-//       .select("-password -email");
-
-//     // return res.status(200).json(req.user);
-//     console.log("middleware authentication successful");
-//     next();
-//   }
-
-//   if (!token) {
-//     res.status(401).json({ message: "Invalid authorization token..." });
-//   }
-// });
 
 app.use("/api/users", userRoute);
 app.use("/api/chats", chatRoute);
@@ -87,8 +62,6 @@ const server = app.listen(port, () => {
 // });
 
 // ------------------------- socket.io ------------------------------
-
-// socketStart(server);
 
 socketStart(server);
 // ------------------------- socket.io ------------------------------

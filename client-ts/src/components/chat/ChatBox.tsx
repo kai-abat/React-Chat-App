@@ -1,106 +1,70 @@
 import moment from "moment";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useRef } from "react";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
-import { AuthContext } from "../../context/AuthContext";
 import { ChatV2Context } from "../../context/ChatV2Context";
-import useChatMessage from "../../hook/useChatMessage";
-import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import ChatBoxHeader from "./ChatBoxHeader";
+import useChatBox from "../../hook/useChatMessage";
 import Typing from "../lottie/Typing";
+import ChatBoxHeader from "./ChatBoxHeader";
 
-const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
-  const { user } = useContext(AuthContext);
+type Props = { showHeader?: boolean; showCloseButton?: boolean };
 
+const ChatBox = ({ showHeader = true, showCloseButton = false }: Props) => {
+  // messageToScrollRef - assign this to the html element where to scroll after showing all message
   const {
-    currentChat,
-    updateCurrentChat,
-    messageURI,
-    setCurrentMessages,
-    currentMessages,
-    newMessage,
-    setTyping,
-    typing,
-    isTyping,
-    textMessage,
-    setTextMessage,
-    socketConnected,
-  } = useContext(ChatV2Context);
+    inputTextMessageValue,
+    chatName,
+    messageToScrollRef,
+    isFetchingMessages,
+    sendingTextMessage,
+    showUserIsTyping,
+    getCurrentChat,
+    getUser,
+    getChatMessages,
+    getIsTyping,
+    handleInputTextMessage,
+  } = useChatBox();
 
-  const { chatMessages, isFetchingMessages, sendTextMessageMutate } =
-    useChatMessage(currentChat);
-
-  const { recipientUser } = useFetchRecipientUser(currentChat, user);
-
-  const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const inputRef = useRef<null | HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!chatMessages) return;
-    setCurrentMessages(chatMessages);
-  }, [chatMessages, setCurrentMessages]);
+  const user = getUser();
+  const currentChat = getCurrentChat();
+  const messages = getChatMessages();
+  const isTyping = getIsTyping();
 
-  useEffect(() => {
-    console.log("newMessage:", newMessage);
-    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-  }, [newMessage, currentMessages, currentChat, isTyping]);
+  if (user === "Not Authorized" || currentChat === "Not Authorized") return;
 
-  if (!user || !currentChat) return;
-
-  // this message should display if
-  // no selected user to chat or if we close the chatbox
-  if (!recipientUser) {
-    return (
-      <p style={{ textAlign: "center", width: "100%" }}>
-        No conversion selected yet...
-      </p>
-    );
-  }
   if (isFetchingMessages) {
     return (
-      <p style={{ textAlign: "center", width: "100%" }}>Loading Chat...</p>
+      <Stack className="w-100">
+        <Typing />
+      </Stack>
     );
   }
 
   const handleEnterKeyPress = (currentText: string) => {
-    const body = JSON.stringify({
-      senderId: user._id,
-      text: currentText,
-      chatId: currentChat._id,
-    });
-
-    // display new message imeddiatly to the current message screen
-
-    sendTextMessageMutate({ url: messageURI, body: body });
-    setTextMessage("");
-
-    // if (socketConnected) {
-    //   socket?.emit("stop-typing", recipientUser._id);
-    //   setTyping(false);
-    // }
-    // sendTextMessage(currentText, user, currentChat?._id, setTextMessage);
+    sendingTextMessage(currentText);
+    handleInputTextMessage("");
   };
 
   const handleOnChangeTextMsg = (e: string) => {
-    setTextMessage(e);
+    handleInputTextMessage(e);
 
-    if (socketConnected && !typing) {
-      setTyping(true);
-    }
+    showUserIsTyping();
   };
 
   return (
     <Stack gap={4} className="chat-box">
       {showHeader && (
         <ChatBoxHeader
-          name={recipientUser.name}
-          closeHandler={() => updateCurrentChat(null)}
+          name={!chatName ? "No Name" : chatName}
+          showCloseButton={showCloseButton}
         />
       )}
       <Stack gap={3} className="messages">
-        {currentMessages &&
-          currentMessages.length > 0 &&
-          currentMessages.map((message, index) => {
+        {messages &&
+          messages.length > 0 &&
+          messages.map((message, index) => {
             return (
               <Stack
                 key={index}
@@ -124,11 +88,11 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
           </Stack>
         )}
 
-        <div ref={messagesEndRef}></div>
+        <div ref={messageToScrollRef}></div>
       </Stack>
       <Stack direction="horizontal" gap={3} className="chat-input flex-grow-0">
         <InputEmoji
-          value={textMessage}
+          value={inputTextMessageValue}
           onChange={(e) => handleOnChangeTextMsg(e)}
           fontFamily="nunito"
           borderColor="rgba(72,112,223,0.2)"
@@ -140,7 +104,7 @@ const ChatBox = ({ showHeader = true }: { showHeader?: boolean }) => {
         />
         <button
           className="send-btn"
-          onClick={() => handleEnterKeyPress(textMessage)}
+          onClick={() => handleEnterKeyPress(inputTextMessageValue)}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

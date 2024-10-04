@@ -6,7 +6,7 @@ import InputEmojiWithRef from "react-input-emoji";
 import { AuthContext } from "../../context/AuthContext";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
 import { ChatV2Context } from "../../context/ChatV2Context";
-import useChatMessage from "../../hook/useChatMessage";
+import useChatBox from "../../hook/useChatMessage";
 
 const ModalChatBox = () => {
   const { user } = useContext(AuthContext);
@@ -29,7 +29,7 @@ const ModalChatBox = () => {
     messageURI,
   } = useContext(ChatV2Context);
 
-  const { chatMessages, sendTextMessageMutate } = useChatMessage(currentChat);
+  const { chatMessages, sendTextMessageMutate } = useChatBox(currentChat);
   const { recipientUser } = useFetchRecipientUser(currentChat, user);
   const [textMessage, setTextMessage] = useState<string>("");
   const messagesEndRef = useRef<null | HTMLDivElement>(null);

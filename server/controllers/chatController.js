@@ -1,8 +1,25 @@
 const chatModel = require("../models/chatModel");
+const latestMessageModel = require("../models/latestMessageModel");
 
 const populateRef = [
   { path: "members", select: "-password" },
   { path: "groupChatAdmin", select: "-password" },
+];
+
+const populateLMsgRef = [
+  {
+    path: "messageId",
+    populate: [
+      {
+        path: "senderId",
+        select: "-password",
+      },
+      {
+        path: "readBy",
+        select: "-password",
+      },
+    ],
+  },
 ];
 
 // api end points
@@ -50,7 +67,17 @@ const findUserChats = async (req, res) => {
       })
       .populate(populateRef);
 
-    res.status(200).json(userChats);
+    const userChatsWithMsg = await Promise.all(
+      userChats.map(async (chat) => {
+        const latestMsg = await latestMessageModel
+          .findOne({ chatId: chat._id })
+          .populate(populateLMsgRef);
+
+        return { chat, latestMessage: latestMsg };
+      })
+    );
+
+    res.status(200).json(userChatsWithMsg);
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -68,7 +95,11 @@ const findChat = async (req, res) => {
       })
       .populate(populateRef);
 
-    res.status(200).json(userChat);
+    const latestMsg = await latestMessageModel
+      .findOne({ chatId: userChat._id })
+      .populate(populateLMsgRef);
+
+    res.status(200).json({ ...userChat, latestMsg });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

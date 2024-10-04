@@ -31,9 +31,22 @@ export type LatestMessageModelType = {
   chatId: string;
   messageId: {
     _id: string;
-    seneder: UserModelType;
+    senderId: UserModelType;
+    readBy: UserModelType[];
     text: string;
     createdAt: string;
     updatedAt: string;
   };
+};
+
+export type ChatsWithMsgModelType = {
+  chat: ChatModelType;
+  latestMessage: LatestMessageModelType;
+};
+
+export type NotificationModelType = {
+  timeSent: Date;
+  isRead: boolean;
+  message: MessagesModelType;
+  count: number;
 };
