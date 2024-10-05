@@ -1,27 +1,36 @@
+import { FormEvent, useState } from "react";
 import { Form, InputGroup, Stack } from "react-bootstrap";
+import useCreateGroupChatForm from "../../hook/useCreateGroupChatForm";
+import { UserModelType } from "../../types/dbModelTypes";
 import { SvgComponent } from "../svg/SvgComponent";
 import { SEARCH_PATH_SVG } from "../svg/SvgContants";
-import { FormEvent, useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
-import { ChatContext } from "../../context/ChatContext";
 import UserPreview from "./UserPreview";
-import { GroupChatContext } from "../../context/GroupChatContext";
-import { UserInfoType } from "../../types/UserTypes";
 
 const CreateGroupChatForm = () => {
-  const { user } = useContext(AuthContext);
-  const { availableUsers } = useContext(ChatContext);
   const {
-    onShaowGCModal,
-    onCheckSelectUser,
-    updateCreateGCForm,
-    createGCForm,
-  } = useContext(GroupChatContext);
+    getUser,
+    getUserChats,
+    groupChatForm,
+    handleChangeName,
+    handleAddMember,
+    handleRemoveMember,
+  } = useCreateGroupChatForm();
 
   const [keyword, setKeyword] = useState<string>("");
-  const searchUsers: UserInfoType[] = [];
+  const searchUsers: UserModelType[] = [];
 
-  if (!user) return;
+  const user = getUser();
+  const userChats = getUserChats();
+
+  if (user === "Not Authorized") return <p>{user}</p>;
+
+  const availableUsers = userChats.reduce((acc, ch) => {
+    if (!ch.chat.isGroupChat) {
+      const u = ch.chat.members.find((m) => m._id !== user._id);
+      if (u) acc.push(u);
+    }
+    return acc;
+  }, [] as UserModelType[]);
 
   if (keyword !== "") {
     keyword.split(" ").forEach((word) => {
@@ -45,7 +54,11 @@ const CreateGroupChatForm = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onShaowGCModal(false);
+  };
+
+  const handleCheckUserSelect = (checked: boolean, user: UserModelType) => {
+    if (checked) handleAddMember(user);
+    if (!checked) handleRemoveMember(user);
   };
 
   return (
@@ -54,10 +67,11 @@ const CreateGroupChatForm = () => {
         <Form.Control
           type="text"
           placeholder="Group Name"
-          onChange={(e) =>
-            updateCreateGCForm({ ...createGCForm, groupName: e.target.value })
-          }
+          onChange={(e) => handleChangeName(e.target.value)}
+          value={groupChatForm.name}
         />
+
+        {/* Search/ Add / Remove user to members */}
         <InputGroup className="mb-1">
           <InputGroup.Text id="basic-addon1">
             <SvgComponent path={SEARCH_PATH_SVG} color="gray" />
@@ -70,10 +84,20 @@ const CreateGroupChatForm = () => {
           />
         </InputGroup>
 
+        <Stack>
+          {groupChatForm.members.map((member) => {
+            return (
+              <Stack direction="horizontal">
+                <span>{member.name}</span>
+              </Stack>
+            );
+          })}
+        </Stack>
+
         <Stack className=" overflow-auto">
           {/* user check box */}
           {displayedUsers.map((user, index) => {
-            const isExist = createGCForm.members.includes(user);
+            const isExist = groupChatForm.members.includes(user);
             return (
               <Form.Check
                 key={index}
@@ -87,10 +111,12 @@ const CreateGroupChatForm = () => {
                   className="this-checkbox"
                   name={user._id}
                   checked={isExist}
-                  onChange={(e) => onCheckSelectUser(e)}
+                  onChange={(e) =>
+                    handleCheckUserSelect(e.target.checked, user)
+                  }
                 />
                 <Form.Check.Label>
-                  <UserPreview recipient={user} />
+                  <UserPreview user={user} />
                 </Form.Check.Label>
               </Form.Check>
             );

@@ -1,7 +1,7 @@
 import moment from "moment";
 import { useContext, useState } from "react";
 import { ChatV2Context } from "../../context/ChatV2Context";
-import { NotificationModelType } from "../../types/MongoDBModelTypes";
+import { NotificationModelType } from "../../types/dbModelTypes";
 
 const Notification = () => {
   // const {

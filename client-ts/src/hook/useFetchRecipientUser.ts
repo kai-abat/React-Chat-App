@@ -1,4 +1,4 @@
-import { ChatModelType, UserModelType } from "../types/MongoDBModelTypes";
+import { ChatModelType, UserModelType } from "../types/dbModelTypes";
 import { UserInfoType } from "../types/UserTypes";
 
 export const useFetchRecipientUser = (

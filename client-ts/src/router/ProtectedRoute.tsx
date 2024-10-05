@@ -1,17 +1,31 @@
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext } from "react";
+import { Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import Typing from "../components/lottie/Typing";
+import useUserAuth from "../hook/useUserAuth";
+import { ToasterContext } from "../context/ToasterContext";
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { user, isLoading } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { isFetchingUserAuth, userAuth } = useUserAuth();
+  const { showToaster } = useContext(ToasterContext);
 
-  useEffect(() => {
-    if (!isLoading && !user) {
-      console.log("user:", user, isLoading);
-      navigate("/login");
-    }
-  }, [navigate, user, isLoading]);
+  if (!isFetchingUserAuth && !userAuth) {
+    console.log("user:", userAuth, isFetchingUserAuth);
+    showToaster(
+      "Not Authorized",
+      "You are not authorized to access this page, Please log in!"
+    );
+    navigate("/login");
+  }
+
+  if (isFetchingUserAuth) {
+    return (
+      <Stack className=" min-vh-100 mt-5">
+        <Typing />
+      </Stack>
+    );
+  }
 
   return <>{children}</>;
 };

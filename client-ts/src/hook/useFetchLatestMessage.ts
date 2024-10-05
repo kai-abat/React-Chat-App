@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { getChatLatestMessage } from "../services/chatService";
-import { ChatModelType } from "../types/MongoDBModelTypes";
+import { ChatModelType } from "../types/dbModelTypes";
 import { ChatV2Context } from "../context/ChatV2Context";
 import { useQuery } from "@tanstack/react-query";
 

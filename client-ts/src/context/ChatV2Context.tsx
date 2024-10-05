@@ -8,20 +8,18 @@ import {
   useState,
 } from "react";
 import { io, Socket } from "socket.io-client";
+import useGroupChatForm from "../hook/useGroupChatForm";
+import useOffCanvas from "../hook/useOffCanvass";
+import { CreateGroupChatFormType } from "../types/chatGroupChatTypes";
+import { CanvasType } from "../types/common";
 import {
   ChatModelType,
   ChatsWithMsgModelType,
   MessagesModelType,
   NotificationModelType,
-} from "../types/MongoDBModelTypes";
+  UserModelType,
+} from "../types/dbModelTypes";
 import { AuthContext } from "./AuthContext";
-import useChats from "../hook/useChats";
-import { getUserChat } from "../services/chatService";
-import { UserInfoType } from "../types/UserTypes";
-
-export const ENDPOINT = "http://localhost:5000";
-// export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; // -> After deployment
-// export const ENDPOINT = "https://gchat-92kx.onrender.com"; // -> After deployment
 
 interface ChatV2ContextType {
   baseURI: string;
@@ -38,6 +36,8 @@ interface ChatV2ContextType {
   isTyping: boolean;
   textMessage: string;
   notifications: NotificationModelType[];
+  showChatOffCanvas: boolean;
+  canvasType: CanvasType;
   updateUserChats: (chats: ChatsWithMsgModelType[]) => void;
   updateCurrentChat: (chat: ChatModelType | null) => void;
   onShowChatBox: () => void;
@@ -51,8 +51,15 @@ interface ChatV2ContextType {
   sortChats: (currChat: ChatModelType[]) => ChatModelType[];
   getNotificationCounter: () => number;
   getUserChats: () => ChatsWithMsgModelType[];
-  getUser: () => UserInfoType | "Not Authorized";
+  getUser: () => UserModelType | "Not Authorized";
   getCurrentChat: () => "Not Authorized" | ChatModelType;
+  handleOffCanvasClose: () => void;
+  handleOffCanvasShow: (c: CanvasType) => void;
+  groupChatForm: CreateGroupChatFormType;
+  handleChangeName: (newName: string) => void;
+  handleAddMember: (newMember: UserModelType) => void;
+  handleAddAdmin: (newAdmin: UserModelType) => void;
+  handleRemoveMember: (newMember: UserModelType) => void;
 }
 
 export const ChatV2Context = createContext<ChatV2ContextType>(
@@ -64,7 +71,7 @@ export const ChatV2ContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user, baseUrl } = useContext(AuthContext);
   // States
   const [userChats, setUserChats] = useState<ChatsWithMsgModelType[]>([]);
   const [currentChat, setCurrentChat] = useState<ChatModelType | null>(null);
@@ -90,7 +97,24 @@ export const ChatV2ContextProvider = ({
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const baseURI = ENDPOINT + "/api";
+  // Off canvas
+  const {
+    show: showChatOffCanvas,
+    handleClose: handleOffCanvasClose,
+    handleShow: handleOffCanvasShow,
+    type: canvasType,
+  } = useOffCanvas();
+
+  // Group Chat Form
+  const {
+    groupChatForm,
+    handleAddAdmin,
+    handleAddMember,
+    handleRemoveMember,
+    handleChangeName,
+  } = useGroupChatForm();
+
+  const baseURI = baseUrl + "/api";
   const chatURI = baseURI + "/chats";
   const messageURI = baseURI + "/messages";
   const timerLength = 5000;
@@ -137,7 +161,7 @@ export const ChatV2ContextProvider = ({
   // initialize socket
   useEffect(() => {
     if (!user) return;
-    const newSocket = io(ENDPOINT);
+    const newSocket = io(baseUrl);
     setSocket(newSocket);
 
     newSocket.emit("setup", user);
@@ -450,6 +474,9 @@ export const ChatV2ContextProvider = ({
         isTyping,
         textMessage,
         notifications,
+        showChatOffCanvas,
+        canvasType,
+        groupChatForm,
         updateUserChats,
         updateCurrentChat,
         onShowChatBox,
@@ -465,6 +492,12 @@ export const ChatV2ContextProvider = ({
         getUserChats,
         getUser,
         getCurrentChat,
+        handleOffCanvasClose,
+        handleOffCanvasShow,
+        handleAddAdmin,
+        handleAddMember,
+        handleRemoveMember,
+        handleChangeName,
       }}
     >
       {children}

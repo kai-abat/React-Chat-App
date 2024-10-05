@@ -2,7 +2,7 @@ import {
   ChatsWithMsgModelType,
   LatestMessageModelType,
   MessagesModelType,
-} from "../types/MongoDBModelTypes";
+} from "../types/dbModelTypes";
 
 export const getUserChat = async (
   id: string | undefined,

@@ -3,28 +3,32 @@ import {
   FormEvent,
   ReactNode,
   useCallback,
-  useEffect,
   useState,
 } from "react";
+import { UserModelType } from "../types/dbModelTypes";
 import {
   LoginFormType,
   LoginUserBodyType,
   RegisterFormType,
   RegisterUserBodyType,
-  UserInfoType,
 } from "../types/UserTypes";
-import { baseUrl, postUserRequest } from "../utls/services";
+import { postUserRequest } from "../utls/services";
 
 // admin@gmail.com
 // Admin@1234
 
+export const ENDPOINT = "http://localhost:5000";
+// export const ENDPOINT = "https://react-chat-app-mlce.onrender.com"; // -> After deployment
+// export const ENDPOINT = "https://gchat-92kx.onrender.com"; // -> After deployment
+
 interface AuthContextType {
-  user: UserInfoType | null;
+  user: UserModelType | null;
   loginForm: LoginFormType;
   registerForm: RegisterFormType;
   updateRegisterForm: (info: RegisterFormType) => void;
   updateLoginForm: (info: LoginFormType) => void;
-  updateUser: (user: UserInfoType) => void;
+  updateUser: (user: UserModelType) => void;
+  updateIsFetchingUser: (status: boolean) => void;
   registerUser: (e: FormEvent<HTMLFormElement>) => Promise<void | {
     error: boolean;
     message: string;
@@ -37,8 +41,9 @@ interface AuthContextType {
   registerError: string | null;
   isRegisterLoading: boolean;
   loginError: string | null;
-  isLoginLoading: boolean;
-  isLoading: boolean;
+  baseUrl: string;
+  usersURI: string;
+  isFetchingUser: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType>(
@@ -46,8 +51,8 @@ export const AuthContext = createContext<AuthContextType>(
 );
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<UserInfoType | null>(null);
+  const [isFetchingUser, setIsFetchingUser] = useState<boolean>(true);
+  const [user, setUser] = useState<UserModelType | null>(null);
   const [registerForm, setRegisterForm] = useState<RegisterFormType>({
     name: "",
     email: "",
@@ -62,16 +67,26 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   });
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoginLoading, setIsLoginLoading] = useState<boolean>(false);
+  const baseUrl: string = ENDPOINT;
+  const baseURI = ENDPOINT + "/api";
+  const usersURI = baseURI + "/users";
 
-  useEffect(() => {
-    setIsLoading(true);
-    const user = localStorage.getItem("User");
-    if (user) {
-      setUser(JSON.parse(user));
-      // console.log("useeffect: user:", user);
-    }
-    setIsLoading(false);
-  }, []);
+  // useEffect(() => {
+  //   const loadUser = async () => {
+  //     setIsLoading(true);
+  //     const user = localStorage.getItem("User");
+  //     const token = localStorage.getItem("Gchat_Token");
+
+  //     await timeout(5000);
+
+  //     if (user) {
+  //       setUser(JSON.parse(user));
+  //       // console.log("useeffect: user:", user);
+  //     }
+  //     setIsLoading(false);
+  //   };
+  //   loadUser();
+  // }, []);
 
   const updateRegisterForm = useCallback((info: RegisterFormType) => {
     setRegisterForm(info);
@@ -81,8 +96,12 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     setLoginForm(info);
   }, []);
 
-  const updateUser = useCallback((user: UserInfoType) => {
+  const updateUser = useCallback((user: UserModelType) => {
     setUser(user);
+  }, []);
+
+  const updateIsFetchingUser = useCallback((status: boolean) => {
+    setIsFetchingUser(status);
   }, []);
 
   const registerUser = useCallback(
@@ -114,11 +133,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       } else {
         localStorage.setItem("User", JSON.stringify(response.success.user));
         localStorage.setItem("Gchat_Token", response.success.user.token);
-        setUser(response.success.user);
+        // setUser(response.success.user);
         console.log(response.success.user);
       }
     },
-    [registerForm]
+    [registerForm, baseUrl]
   );
 
   const logout = useCallback(() => {
@@ -152,28 +171,30 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       } else {
         localStorage.setItem("User", JSON.stringify(response.success.user));
         localStorage.setItem("Gchat_Token", response.success.user.token);
-        setUser(response.success.user);
+        // setUser(response.success.user);
         console.log(response.success.user);
       }
     },
-    [loginForm]
+    [loginForm, baseUrl]
   );
 
   return (
     <AuthContext.Provider
       value={{
+        baseUrl,
+        usersURI,
         user,
         loginForm,
         registerForm,
+        isFetchingUser,
         updateRegisterForm,
         updateLoginForm,
         updateUser,
+        updateIsFetchingUser,
         registerUser,
         registerError,
         isRegisterLoading,
         loginError,
-        isLoginLoading,
-        isLoading,
         login,
         logout,
       }}

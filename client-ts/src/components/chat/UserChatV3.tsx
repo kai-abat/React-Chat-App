@@ -4,7 +4,7 @@ import { Stack } from "react-bootstrap";
 import avatar from "../../assets/avatar.svg";
 import { ChatV2Context } from "../../context/ChatV2Context";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { ChatsWithMsgModelType } from "../../types/MongoDBModelTypes";
+import { ChatsWithMsgModelType } from "../../types/dbModelTypes";
 import { UserInfoType } from "../../types/UserTypes";
 
 // Component that display the user's with chat history

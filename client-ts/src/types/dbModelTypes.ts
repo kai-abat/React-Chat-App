@@ -1,10 +1,19 @@
-export type UserModelType = {
+interface TimeStampType {
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface UserType {
   _id: string;
   name: string;
   email: string;
-  createdAt: string;
-  updatedAt: string;
-};
+}
+
+export type UserModelType = UserType & TimeStampType;
+
+export interface UserAuthType extends UserModelType {
+  token: string;
+}
 
 export type ChatModelType = {
   _id: string;

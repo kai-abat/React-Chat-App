@@ -44,6 +44,8 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    console.log("Server Login:", email, password);
     let user = await userModel.findOne({ email });
     if (!user)
       return res
@@ -61,7 +63,16 @@ const loginUser = async (req, res) => {
 
     const token = generateToken(user);
 
-    res.status(200).json({ _id: user._id, name: user.name, email, token });
+    console.log("LOGIN:", user);
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email,
+      token,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -110,10 +121,22 @@ const searchUsers = async (req, res) => {
   }
 };
 
+const getAuthUserInfo = async (req, res) => {
+  try {
+    console.log("getAuthUserInfo...");
+    console.log("getAuthUserInfo: req.user:", req.user);
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   findUser,
   getUsers,
   searchUsers,
+  getAuthUserInfo,
 };
