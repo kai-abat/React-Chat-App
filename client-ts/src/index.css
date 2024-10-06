@@ -371,28 +371,6 @@ body {
   color: #939292;
 }
 
-.modal-create-gc {
-  background: var(--main-bg-color);
-}
-
-.checkbox-user-preview {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-}
-
-.checkbox-user-preview {
-  --bs-form-valid-border-color: var(--bs-primary);
-  --bs-form-valid-color: var(--bs-primary);
-}
-
-.checkbox-user-preview .this-checkbox {
-  border-radius: 1em;
-  width: 2rem;
-  height: 1.5rem;
-}
-
 /* bs toast */
 
 .toaster {
@@ -414,4 +392,67 @@ body {
 .chat-off-canvas.offcanvas.offcanvas-start.show {
   color: var(--text-color);
   background: var(--main-bg-color);
+}
+
+/* Search User */
+.search-user-form {
+  gap: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-user-form .search-result {
+  gap: 1.25rem;
+}
+
+.search-result .user:hover {
+  background-color: rgb(100, 100, 100);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+/* Group Chat */
+/* Members */
+.gc-members {
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+/* Group Chat Searh */
+.gc-search {
+  margin-top: 1.5rem;
+  overflow: auto;
+  width: 100%;
+  gap: 1rem;
+}
+
+.checkbox-user-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  --bs-form-valid-border-color: var(--bs-primary);
+  --bs-form-valid-color: var(--bs-primary);
+}
+
+.checkbox-user-preview:hover {
+  background-color: rgb(100, 100, 100);
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.checkbox-user-preview .form-check-label {
+  width: 100%;
+}
+
+.checkbox-user-preview .this-checkbox {
+  border-radius: 1em;
+  width: 2rem;
+  height: 1.5rem;
+}
+
+/* User Preview */
+
+.user-preview {
+  width: 100%;
 }

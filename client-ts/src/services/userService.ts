@@ -20,6 +20,33 @@ export const getUserAuth = async (url: string): Promise<UserModelType> => {
   return data;
 };
 
+type SearchArgs = {
+  url: string;
+  keyword: string;
+};
+export const searchUser = async (
+  args: SearchArgs
+): Promise<UserModelType[]> => {
+  const { url, keyword } = args;
+  console.log("Executing service getUserAuth....");
+  const token = localStorage.getItem("Gchat_Token");
+
+  // const { data } = await axios.get(`/api/user?search=${search}`, config);
+  const response = await fetch(`${url}/search?keyword=${keyword}`, {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
 type LoginArgs = {
   url: string;
   email: string;

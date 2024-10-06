@@ -4,7 +4,7 @@ import { UserModelType } from "../../types/dbModelTypes";
 
 const UserPreview = ({ user }: { user: UserModelType }) => {
   return (
-    <Stack direction="horizontal" gap={4} className="user-card p-3">
+    <Stack direction="horizontal" gap={4} className="user-preview">
       <span className="avatar">
         <img src={avatar} alt="profile picture" height="60px" />
       </span>

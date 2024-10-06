@@ -69,7 +69,9 @@ const protect = async (req, res, next) => {
       req.user = await userModel
         .findById(authUser.user._id)
         .select("-password");
-      console.log("Found user: ", req.user);
+
+      req.userFound = req.user;
+      console.log("Found user -> req.user:", req.user);
 
       // console.log("middleware protect finish...");
       return next();

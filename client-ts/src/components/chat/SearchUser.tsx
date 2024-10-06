@@ -1,24 +1,37 @@
-import { FormEvent, useEffect, useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
-import SearchChatModal from "./SearchChatModal";
+import { FormEvent, useState } from "react";
+import { Col, Form, Row, Stack } from "react-bootstrap";
+import useSearchUser from "../../hook/useSearchUser";
+import { getAvailableUsersToChat } from "../../utls/helper";
+import UserPreview from "./UserPreview";
+import Loader from "../Loader";
 
 const SearchUser = () => {
+  const { getUser, getUserChats, handleSearchUser, isPending, usersFound } =
+    useSearchUser();
   const [keywords, setKeywords] = useState<string>("");
-  const [isShowResultsModal, setIsShowResultsModal] = useState<boolean>(false);
+  const user = getUser();
+  const userChats = getUserChats();
 
-  useEffect(() => {
-    if (!isShowResultsModal) {
-      setKeywords("");
-    }
-  }, [isShowResultsModal]);
+  if (user === "Not Authorized") return <p>{user}</p>;
+
+  const usersFromChat = getAvailableUsersToChat(user, userChats);
+
+  const usersNotInChat = usersFound.filter((user) => {
+    const found = usersFromChat.find((c) => c._id === user._id);
+    if (found) {
+      return false;
+    } else return true;
+  });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsShowResultsModal(true);
+
+    handleSearchUser(keywords);
   };
+
   return (
     <>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} className="search-user-form">
         <Row className="search-box">
           <Col xs="auto" className="search-text ">
             <Form.Control
@@ -43,12 +56,18 @@ const SearchUser = () => {
             </button>
           </Col>
         </Row>
+        <Row className="search-result">
+          {isPending && <Loader />}
+          {!isPending &&
+            usersNotInChat.map((user) => {
+              return (
+                <Stack direction="horizontal" className="user">
+                  <UserPreview user={user} />
+                </Stack>
+              );
+            })}
+        </Row>
       </Form>
-      <SearchChatModal
-        isShowResultsModal={isShowResultsModal}
-        setIsShowResultsModal={setIsShowResultsModal}
-        searchKeywords={keywords}
-      />
     </>
   );
 };

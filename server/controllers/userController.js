@@ -34,16 +34,14 @@ const registerUser = async (req, res) => {
     // generate jwt token
     const token = generateToken(user);
 
-    res
-      .status(200)
-      .json({
-        _id: user._id,
-        name,
-        email,
-        token,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      });
+    res.status(200).json({
+      _id: user._id,
+      name,
+      email,
+      token,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -111,6 +109,7 @@ const getUsers = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
+    console.log("searchUsers: keyword:", req.query.keyword);
     const keyword = req.query.keyword
       ? {
           $or: [
@@ -122,7 +121,10 @@ const searchUsers = async (req, res) => {
 
     const users = await userModel
       .find(keyword)
-      .find({ _id: { $ne: req.user._id } });
+      .find({ _id: { $ne: req.user._id } })
+      .select("-password");
+
+    console.log("search users result:", users);
     res.status(200).json(users);
   } catch (error) {
     console.error(error);

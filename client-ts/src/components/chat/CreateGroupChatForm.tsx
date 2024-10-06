@@ -5,6 +5,7 @@ import { UserModelType } from "../../types/dbModelTypes";
 import { SvgComponent } from "../svg/SvgComponent";
 import { SEARCH_PATH_SVG } from "../svg/SvgContants";
 import UserPreview from "./UserPreview";
+import { getAvailableUsersToChat } from "../../utls/helper";
 
 const CreateGroupChatForm = () => {
   const {
@@ -24,13 +25,7 @@ const CreateGroupChatForm = () => {
 
   if (user === "Not Authorized") return <p>{user}</p>;
 
-  const availableUsers = userChats.reduce((acc, ch) => {
-    if (!ch.chat.isGroupChat) {
-      const u = ch.chat.members.find((m) => m._id !== user._id);
-      if (u) acc.push(u);
-    }
-    return acc;
-  }, [] as UserModelType[]);
+  const availableUsers = getAvailableUsersToChat(user, userChats);
 
   if (keyword !== "") {
     keyword.split(" ").forEach((word) => {
@@ -71,20 +66,11 @@ const CreateGroupChatForm = () => {
           value={groupChatForm.name}
         />
 
-        {/* Search/ Add / Remove user to members */}
-        <InputGroup className="mb-1">
-          <InputGroup.Text id="basic-addon1">
-            <SvgComponent path={SEARCH_PATH_SVG} color="gray" />
-          </InputGroup.Text>
-          <Form.Control
-            placeholder="Search"
-            aria-label="Search"
-            ria-describedby="basic-addon1"
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-        </InputGroup>
-
-        <Stack>
+        <Stack className="gc-members">
+          <strong>Members</strong>
+          <Stack direction="horizontal">
+            <UserPreview user={user} />
+          </Stack>
           {groupChatForm.members.map((member) => {
             return (
               <Stack direction="horizontal">
@@ -94,7 +80,20 @@ const CreateGroupChatForm = () => {
           })}
         </Stack>
 
-        <Stack className=" overflow-auto">
+        <Stack className="gc-search">
+          <strong>Search</strong>
+          {/* Search/ Add / Remove user to members */}
+          <InputGroup className="mb-1">
+            <InputGroup.Text id="basic-addon1">
+              <SvgComponent path={SEARCH_PATH_SVG} color="gray" />
+            </InputGroup.Text>
+            <Form.Control
+              placeholder="Search"
+              aria-label="Search"
+              ria-describedby="basic-addon1"
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+          </InputGroup>
           {/* user check box */}
           {displayedUsers.map((user, index) => {
             const isExist = groupChatForm.members.includes(user);
