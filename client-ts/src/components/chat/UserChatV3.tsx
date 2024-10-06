@@ -11,9 +11,11 @@ import { UserInfoType } from "../../types/UserTypes";
 const UserChatV3 = ({
   chatWithMsg,
   user,
+  isActive = false,
 }: {
   chatWithMsg: ChatsWithMsgModelType;
   user: UserModelType;
+  isActive?: boolean;
 }) => {
   // const { onlineUsers, notifications } = useContext(ChatContext);
 
@@ -71,7 +73,8 @@ const UserChatV3 = ({
     <Stack
       direction="horizontal"
       gap={3}
-      className="user-card align-items-center p-2 justify-content-between"
+      // className="user-card align-items-center p-2 justify-content-between"
+      className={`user-card ${isActive && "active"}`}
       role="button"
       onClick={handleClickChat}
     >

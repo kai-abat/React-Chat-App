@@ -14,12 +14,15 @@ import useNavChat from "../hook/useNavChat";
 // Version 3
 const ChatV3 = () => {
   // Custom hook of Chat
-  const { isFetchingChats, getUser, getUserChats } = useChats();
+  const { isFetchingChats, getUser, getUserChats, getCurrentChat } = useChats();
   const { showChatOffCanvas, canvasType, handleOffCanvasClose } = useNavChat();
   const dimensions = useWindowDimensions();
 
   const user = getUser();
   const userChats = getUserChats();
+  const currentChat = getCurrentChat();
+  const currentChatId =
+    currentChat === "Not Authorized" ? null : currentChat._id;
 
   if (user === "Not Authorized") return <p>No user is currently logged in!</p>;
 
@@ -32,13 +35,16 @@ const ChatV3 = () => {
         {/* <ChatControls /> */}
 
         {!userChats || userChats.length < 1 ? null : (
-          <Stack className="messages-box flex-grow-0 pe-3" gap={3}>
+          <Stack className="messages-box" gap={3}>
             {isFetchingChats && <Typing />}
             {userChats.map((chat, index) => {
               return (
-                <div key={index}>
-                  <UserChatV3 chatWithMsg={chat} user={user} />
-                </div>
+                <UserChatV3
+                  key={index}
+                  chatWithMsg={chat}
+                  user={user}
+                  isActive={chat.chat._id === currentChatId}
+                />
               );
             })}
           </Stack>
