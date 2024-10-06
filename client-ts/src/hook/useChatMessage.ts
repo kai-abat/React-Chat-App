@@ -1,10 +1,11 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect, useRef } from "react";
 import { ChatV2Context } from "../context/ChatV2Context";
 import { getChatMessage, sendTextMessage } from "../services/chatService";
 import { AuthContext } from "../context/AuthContext";
 
 const useChatBox = () => {
+  const queryClient = useQueryClient();
   const { user } = useContext(AuthContext);
   const {
     textMessage: inputTextMessageValue,
@@ -39,6 +40,9 @@ const useChatBox = () => {
       if (currentChat) {
         setNewMessage(newMessage);
         setCurrentMessages((prev) => (prev = [...prev, newMessage]));
+        queryClient.invalidateQueries({
+          queryKey: ["Chats"],
+        });
       }
     },
   });

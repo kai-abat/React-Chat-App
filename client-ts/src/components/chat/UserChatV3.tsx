@@ -4,7 +4,7 @@ import { Stack } from "react-bootstrap";
 import avatar from "../../assets/avatar.svg";
 import { ChatV2Context } from "../../context/ChatV2Context";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { ChatsWithMsgModelType } from "../../types/dbModelTypes";
+import { ChatsWithMsgModelType, UserModelType } from "../../types/dbModelTypes";
 import { UserInfoType } from "../../types/UserTypes";
 
 // Component that display the user's with chat history
@@ -13,7 +13,7 @@ const UserChatV3 = ({
   user,
 }: {
   chatWithMsg: ChatsWithMsgModelType;
-  user: UserInfoType;
+  user: UserModelType;
 }) => {
   // const { onlineUsers, notifications } = useContext(ChatContext);
 
@@ -25,14 +25,17 @@ const UserChatV3 = ({
     handleOnClickNotification,
     onShowChatBox,
   } = useContext(ChatV2Context);
-  const { recipientUser } = useFetchRecipientUser(chat, user);
+
   // const { latestMessage } = useFetchLatestMessage(chat);
 
   const isOnline = false;
   const numberOfNotification = 0;
 
-  // console.log("recipientUser", recipientUser);
-  // console.log("latestMessage", latestMessage);
+  let chatName = chat.isGroupChat
+    ? chat.name
+    : chat.members.find((m) => m._id !== user?._id)?.name;
+
+  if (!chatName) chatName = "No Name Found";
 
   /*   const isOnline = onlineUsers.some(
     (olUser) => olUser.user._id === recipientUser?._id
@@ -83,7 +86,7 @@ const UserChatV3 = ({
       <div className="content">
         {/* name, text msg */}
         <div className="text-content">
-          <div className="name">{recipientUser?.name}</div>
+          <div className="name">{chatName}</div>
           <div className="text">
             {latestMessage?.messageId.text && (
               <span>{truncateText(latestMessage.messageId.text)}</span>
