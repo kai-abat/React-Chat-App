@@ -393,6 +393,8 @@ body {
   height: 1.5rem;
 }
 
+/* bs toast */
+
 .toaster {
   background: var(--main-bg-color);
   --bs-toast-header-bg: var(--main-bg-color);
@@ -406,4 +408,10 @@ body {
 
 .toaster .toaster-header {
   color: var(--text-color);
+}
+
+/* bs offcanvas */
+.chat-off-canvas.offcanvas.offcanvas-start.show {
+  color: var(--text-color);
+  background: var(--main-bg-color);
 }

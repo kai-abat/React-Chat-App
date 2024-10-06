@@ -1,4 +1,4 @@
-import { Offcanvas, Stack } from "react-bootstrap";
+import { Stack } from "react-bootstrap";
 import ChatBox from "../components/chat/ChatBox";
 import CreateGroupChatModal from "../components/chat/CreateGroupChatModal";
 import ModalChatBoxV2 from "../components/chat/ModalChatBoxV2";
@@ -6,10 +6,10 @@ import NavChat from "../components/chat/NavChat";
 import UserChatV3 from "../components/chat/UserChatV3";
 import Layout from "../components/Layout";
 import Typing from "../components/lottie/Typing";
-import useChats from "../hook/useChats";
-import useWindowDimensions from "../hook/useWindowDimensions";
 import OffCanvasMain from "../components/OffCanvasMain";
+import useChats from "../hook/useChats";
 import useNavChat from "../hook/useNavChat";
+import useWindowDimensions from "../hook/useWindowDimensions";
 
 // Version 3
 const ChatV3 = () => {

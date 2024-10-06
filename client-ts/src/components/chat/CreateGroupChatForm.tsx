@@ -88,7 +88,7 @@ const CreateGroupChatForm = () => {
           {groupChatForm.members.map((member) => {
             return (
               <Stack direction="horizontal">
-                <span>{member.name}</span>
+                <UserPreview user={member} />
               </Stack>
             );
           })}
