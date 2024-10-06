@@ -51,7 +51,7 @@ const Login = () => {
                   updateLoginForm({ ...loginForm, password: e.target.value })
                 }
               />
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isLoginLoading}>
                 {isLoginLoading ? "Logging in..." : "Login"}
               </Button>
               {!isLoginLoading && (
@@ -59,6 +59,7 @@ const Login = () => {
                   variant="danger"
                   type="button"
                   onClick={handleGuestLogin}
+                  disabled={isLoginLoading}
                 >
                   Login as Guest User
                 </Button>

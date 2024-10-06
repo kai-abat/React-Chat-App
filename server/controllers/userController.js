@@ -34,7 +34,16 @@ const registerUser = async (req, res) => {
     // generate jwt token
     const token = generateToken(user);
 
-    res.status(200).json({ _id: user._id, name, email, token });
+    res
+      .status(200)
+      .json({
+        _id: user._id,
+        name,
+        email,
+        token,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

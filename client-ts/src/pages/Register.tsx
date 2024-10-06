@@ -1,30 +1,37 @@
-import { useContext, useEffect } from "react";
+import { FormEvent, useContext, useEffect } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { AuthContext } from "../context/AuthContext";
+import useRegisterUser from "../hook/useRegisterUser";
+import { ToasterContext } from "../context/ToasterContext";
 
 const Register = () => {
-  const {
-    registerForm,
-    updateRegisterForm,
-    registerUser,
-    registerError,
-    isRegisterLoading,
-    user,
-    isLoading,
-  } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { registerForm, updateRegisterForm } = useContext(AuthContext);
+  const { showToaster } = useContext(ToasterContext);
 
-  useEffect(() => {
-    if (!isLoading && user) {
-      navigate("/");
+  const { handleRegister, registerError, registerPending } = useRegisterUser();
+
+  const toastTitle = "Registration Error";
+
+  const handleRegisterForm = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (registerForm.confirmPassword !== registerForm.password) {
+      showToaster(toastTitle, "Password not match!");
+      return;
     }
-  }, [navigate, user, isLoading]);
+
+    handleRegister(
+      registerForm.name,
+      registerForm.email,
+      registerForm.password
+    );
+  };
 
   return (
     <Layout.Content>
-      <Form onSubmit={registerUser}>
+      <Form onSubmit={handleRegisterForm}>
         <Row
           style={{
             height: "100dvh",
@@ -69,12 +76,16 @@ const Register = () => {
                   })
                 }
               />
-              <Button variant="primary" type="submit">
-                {isRegisterLoading ? "Creating your account..." : "Register"}
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={registerPending}
+              >
+                {registerPending ? "Creating your account..." : "Register"}
               </Button>
               {registerError && (
                 <Alert variant="danger">
-                  <p>{registerError}</p>
+                  <p>{registerError.message}</p>
                 </Alert>
               )}
             </Stack>

@@ -1,4 +1,4 @@
-import { ENDPOINT } from "../context/ChatContext";
+import { ENDPOINT } from "../context/AuthContext";
 import {
   AllUsersResponseType,
   ChatResponseType,

@@ -37,7 +37,44 @@ export const loginUser = async (args: LoginArgs): Promise<UserAuthType> => {
 
   await timeout(2000);
 
-  const response = await fetch(`${url}/login`, {
+  const response = await fetch(targetUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
+type RegisterArgs = {
+  url: string;
+  name: string;
+  email: string;
+  password: string;
+};
+export const registerUser = async (
+  args: RegisterArgs
+): Promise<UserAuthType> => {
+  const { url, name, email, password } = args;
+  const body = {
+    name,
+    email,
+    password,
+  };
+
+  const targetUrl = `${url}/register`;
+  console.log("registerUser:", targetUrl, body);
+
+  await timeout(2000);
+
+  const response = await fetch(targetUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
