@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContextProvider } from "../context/AuthContext";
-import LayoutMain from "../components/LayoutMain";
+import LayoutMain from "../components/common/LayoutMain";
 import About from "../pages/About";
 import Chat from "../pages/ChatV3";
 import Contact from "../pages/Contact";

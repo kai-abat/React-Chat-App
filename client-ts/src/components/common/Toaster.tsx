@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
-import { ToasterContext } from "../context/ToasterContext";
+import { ToasterContext } from "../../context/ToasterContext";
 
 const Toaster = () => {
   const { showToast, getMessage, getTitle, closeToaster } =
@@ -14,7 +14,7 @@ const Toaster = () => {
         show={showToast}
         className="toaster"
         onClose={closeToaster}
-        delay={3000}
+        delay={4000}
         autohide
       >
         <Toast.Header closeVariant="white">

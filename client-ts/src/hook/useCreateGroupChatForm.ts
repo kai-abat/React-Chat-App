@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { ChatV2Context } from "../context/ChatV2Context";
-import CreateGroupChatForm from "../components/chat/CreateGroupChatForm";
+import useCreateChat from "./useCreateChat";
 
 const useCreateGroupChatForm = () => {
   const {
@@ -11,7 +11,10 @@ const useCreateGroupChatForm = () => {
     handleAddMember,
     handleRemoveMember,
     handleAddAdmin,
+    resetCreateGroupChatForm,
   } = useContext(ChatV2Context);
+
+  const { handleCreateGroupChat } = useCreateChat("Create Group Chat");
 
   return {
     getUser,
@@ -21,6 +24,8 @@ const useCreateGroupChatForm = () => {
     handleAddMember,
     handleRemoveMember,
     handleAddAdmin,
+    handleCreateGroupChat,
+    resetCreateGroupChatForm,
   };
 };
 

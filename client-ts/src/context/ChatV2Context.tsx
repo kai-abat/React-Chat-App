@@ -60,6 +60,8 @@ interface ChatV2ContextType {
   handleAddMember: (newMember: UserModelType) => void;
   handleAddAdmin: (newAdmin: UserModelType) => void;
   handleRemoveMember: (newMember: UserModelType) => void;
+  resetCreateGroupChatForm: () => void;
+  handleCreateGroupChatError: (errors: string[]) => void;
 }
 
 export const ChatV2Context = createContext<ChatV2ContextType>(
@@ -112,6 +114,8 @@ export const ChatV2ContextProvider = ({
     handleAddMember,
     handleRemoveMember,
     handleChangeName,
+    handleError: handleCreateGroupChatError,
+    reset: resetCreateGroupChatForm,
   } = useGroupChatForm();
 
   const baseURI = baseUrl + "/api";
@@ -498,6 +502,8 @@ export const ChatV2ContextProvider = ({
         handleAddMember,
         handleRemoveMember,
         handleChangeName,
+        resetCreateGroupChatForm,
+        handleCreateGroupChatError,
       }}
     >
       {children}

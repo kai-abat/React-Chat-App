@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "bootstrap/dist/css/bootstrap.min.css"; // import the bootstrap css file
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import LayoutMain from "./components/LayoutMain";
+import LayoutMain from "./components/common/LayoutMain";
 import { AuthContextProvider } from "./context/AuthContext";
 import { ChatV2ContextProvider } from "./context/ChatV2Context";
 import About from "./pages/About";
@@ -12,7 +12,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Register from "./pages/Register";
 import ProtectedRoute from "./router/ProtectedRoute";
-import Toaster from "./components/Toaster";
+import Toaster from "./components/common/Toaster";
 import { ToasterContextProvider } from "./context/ToasterContext";
 
 const queryClient = new QueryClient({
@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
       <ToasterContextProvider>
         <AuthContextProvider>
           <ChatV2ContextProvider>

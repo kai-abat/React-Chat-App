@@ -36,6 +36,10 @@ body {
   background: var(--main-bg-color);
   color: var(--text-color);
   min-height: 100vh;
+  /* --bs-offcanvas-zindex: 1055; */
+  /* --bs-toast-zindex: 1090; */
+  --bs-offcanvas-zindex: 2000;
+  --bs-toast-zindex: 1090;
 }
 
 /* ------ scrollbar ------ */
@@ -396,10 +400,13 @@ body {
 }
 
 /* Search User */
-.search-user-form {
+
+.offcanvas-body .search-user-form {
   gap: 2rem;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
 }
 
 .search-user-form .search-result {
@@ -414,18 +421,55 @@ body {
 }
 
 /* Group Chat */
-/* Members */
-.gc-members {
-  margin-top: 1.5rem;
+.chat-off-canvas .offcanvas-body {
+  /* height: 90dvh !important; */
+  display: flex !important;
+  /* background: indianred; */
+}
+
+.offcanvas-body .gc-form {
+  width: 100%;
+  height: 100%;
+}
+
+.gc-container {
+  overflow-y: hidden;
+  height: 100%;
+  min-height: 500px;
+  width: 100%;
+}
+
+.gc-inputs {
+  height: 90%;
   gap: 1rem;
 }
 
-/* Group Chat Searh */
-.gc-search {
-  margin-top: 1.5rem;
-  overflow: auto;
-  width: 100%;
-  gap: 1rem;
+.gc-inputs .gc-name {
+  height: 3rem;
+  /* background: palevioletred; */
+}
+
+.gc-inputs .gc-search {
+  height: 6rem;
+  /* background: blue; */
+}
+
+.gc-inputs .gc-users {
+  /* background: red; */
+  height: 75%;
+  overflow-y: auto;
+}
+
+@media only screen and (max-height: 400px) {
+  .gc-inputs .gc-users {
+    /* background: red; */
+    /* height: 400px; */
+    overflow-y: hidden;
+  }
+}
+
+.gc-container .gc-control {
+  height: auto;
 }
 
 .checkbox-user-preview {

@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/Loader";
+import Loader from "../components/common/Loader";
 import { AuthContext } from "../context/AuthContext";
 import { ToasterContext } from "../context/ToasterContext";
 import useUserAuth from "../hook/useUserAuth";

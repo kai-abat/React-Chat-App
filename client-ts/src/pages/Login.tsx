@@ -1,6 +1,6 @@
 import { FormEvent, useContext } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
-import Layout from "../components/Layout";
+import Layout from "../components/common/Layout";
 import { AuthContext } from "../context/AuthContext";
 import useLoginUser from "../hook/useLoginUser";
 

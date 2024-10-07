@@ -3,8 +3,8 @@ import { Col, Form, Row, Stack } from "react-bootstrap";
 import useSearchUser from "../../hook/useSearchUser";
 import { getAvailableUsersToChat } from "../../utls/helper";
 import UserPreview from "./UserPreview";
-import Loader from "../Loader";
-import ConfirmModal from "../ConfirmModal";
+import Loader from "../common/Loader";
+import ConfirmModal from "../common/ConfirmModal";
 import useConfirmModal from "../../hook/useConfirmModal";
 import { UserModelType } from "../../types/dbModelTypes";
 
@@ -104,7 +104,7 @@ const SearchUser = ({ onCloseCanvas }: Props) => {
       </Form>
       <ConfirmModal
         isShow={isShow}
-        title="Creat Chat"
+        title="Create Chat"
         message={`Are you sure to create a chat with ${selectedUser?.name}?`}
         handleCancel={handleCancel}
         handleConfirm={handleConfirm}

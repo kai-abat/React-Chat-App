@@ -31,7 +31,7 @@ const createChat = async (req, res) => {
   try {
     if (isGroupChat) {
       console.log(
-        "create group chat:",
+        "create group chat input values:",
         name,
         isGroupChat,
         members,
@@ -65,7 +65,7 @@ const createChat = async (req, res) => {
 
       let response = await newChat.save();
       response = await response.populate(populateRef);
-      console.log("create group chat:", response);
+      console.log("create group chat: response:", response);
 
       res.status(200).json(response);
     } else {

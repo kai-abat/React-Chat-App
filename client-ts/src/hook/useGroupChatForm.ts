@@ -6,8 +6,10 @@ const defaultValue: CreateGroupChatFormType = {
   name: "",
   members: [],
   groupChatAdmin: [],
+  errors: [],
 };
 
+// Manage group chat form state
 const useGroupChatForm = () => {
   const [groupChatForm, setGroupChatForm] =
     useState<CreateGroupChatFormType>(defaultValue);
@@ -39,6 +41,12 @@ const useGroupChatForm = () => {
     });
   };
 
+  const handleError = (errors: string[]) => {
+    setGroupChatForm((g) => {
+      return { ...g, errors };
+    });
+  };
+
   const reset = () => {
     setGroupChatForm(defaultValue);
   };
@@ -48,6 +56,7 @@ const useGroupChatForm = () => {
     handleAddMember,
     handleRemoveMember,
     handleAddAdmin,
+    handleError,
     reset,
   };
 };
