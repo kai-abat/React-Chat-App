@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Layout from "./Layout";
 import NaviBar from "./NaviBar";
+import { Stack } from "react-bootstrap";
 
 const LayoutMain = () => {
   return (
@@ -11,7 +12,13 @@ const LayoutMain = () => {
       <Layout.Body>
         <Outlet />
       </Layout.Body>
-      <Layout.Footer>This is the footer</Layout.Footer>
+      <Layout.Footer>
+        <Stack className="footer">
+          <strong>
+            {`GChat App Powered by MERN Stack. Copyright © ${new Date().getFullYear()}. Develop by Kai`}
+          </strong>
+        </Stack>
+      </Layout.Footer>
     </Layout>
   );
 };

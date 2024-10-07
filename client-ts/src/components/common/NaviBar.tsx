@@ -8,7 +8,6 @@ const NaviBar = () => {
   const { user, logout } = useContext(AuthContext);
   return (
     <Navbar
-      bg="dark"
       className=""
       style={{
         height: "3.75rem",

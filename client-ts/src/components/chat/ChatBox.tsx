@@ -1,8 +1,7 @@
 import moment from "moment";
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
-import { ChatV2Context } from "../../context/ChatV2Context";
 import useChatBox from "../../hook/useChatMessage";
 import Typing from "../lottie/Typing";
 import ChatBoxHeader from "./ChatBoxHeader";

@@ -8,7 +8,7 @@ const NavChat = () => {
   const width = 40;
 
   return (
-    <Stack gap={3}>
+    <Stack gap={3} className="chat-navbar">
       <Button onClick={() => handleOffCanvasShow("SEARCH")}>
         <SvgComponent width="1.5rem" path={SEARCH_PATH_SVG} />
       </Button>
