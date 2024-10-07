@@ -1,4 +1,6 @@
 import {
+  ChatDetailType,
+  ChatModelType,
   ChatsWithMsgModelType,
   LatestMessageModelType,
   MessagesModelType,
@@ -90,6 +92,33 @@ export const getChatLatestMessage = async (
       Authorization: "Bearer " + token,
     },
   });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+};
+
+type CreateChatArgs = {
+  url: string;
+  body: ChatDetailType;
+};
+export const createChat = async (
+  args: CreateChatArgs
+): Promise<ChatModelType> => {
+  const token = localStorage.getItem("Gchat_Token");
+  const body = args.body;
+  const response = await fetch(`${args.url}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(body),
+  });
+
   const data = await response.json();
 
   if (!response.ok) {

@@ -1,3 +1,6 @@
+interface ModelIdTYpe {
+  _id: string;
+}
 interface TimeStampType {
   createdAt: string;
   updatedAt: string;
@@ -15,27 +18,24 @@ export interface UserAuthType extends UserModelType {
   token: string;
 }
 
-export type ChatModelType = {
-  _id: string;
+export interface ChatDetailType {
   name: string | null;
   isGroupChat: boolean;
   members: UserModelType[];
   groupChatAdmin: UserModelType[];
-  createdAt: string;
-  updatedAt: string;
-};
+}
 
-export type MessagesModelType = {
+export type ChatModelType = ModelIdTYpe & ChatDetailType & TimeStampType;
+
+export interface MessagesModelType extends TimeStampType {
   _id: string;
   chatId: ChatModelType;
   senderId: UserModelType;
   text: string;
   readBy: UserModelType[];
-  createdAt: string;
-  updatedAt: string;
-};
+}
 
-export type LatestMessageModelType = {
+export interface LatestMessageModelType {
   _id: string;
   chatId: string;
   messageId: {
@@ -46,11 +46,11 @@ export type LatestMessageModelType = {
     createdAt: string;
     updatedAt: string;
   };
-};
+}
 
 export type ChatsWithMsgModelType = {
   chat: ChatModelType;
-  latestMessage: LatestMessageModelType;
+  latestMessage?: LatestMessageModelType;
 };
 
 export type NotificationModelType = {

@@ -46,19 +46,22 @@ const useChats = () => {
 
         if (notifFound) {
           const nDate = Date.parse(notifFound.message.createdAt);
-          const lDate = Date.parse(
-            chatWithMsg.latestMessage.messageId.createdAt
-          );
 
-          if (nDate > lDate) {
-            chatWithMsg.latestMessage.messageId = {
-              _id: notifFound.message._id,
-              senderId: notifFound.message.senderId,
-              text: notifFound.message.text,
-              readBy: notifFound.message.readBy,
-              createdAt: notifFound.message.createdAt,
-              updatedAt: notifFound.message.updatedAt,
-            };
+          if (chatWithMsg.latestMessage) {
+            const lDate = Date.parse(
+              chatWithMsg.latestMessage.messageId.createdAt
+            );
+
+            if (nDate > lDate) {
+              chatWithMsg.latestMessage.messageId = {
+                _id: notifFound.message._id,
+                senderId: notifFound.message.senderId,
+                text: notifFound.message.text,
+                readBy: notifFound.message.readBy,
+                createdAt: notifFound.message.createdAt,
+                updatedAt: notifFound.message.updatedAt,
+              };
+            }
           }
         }
 
@@ -67,8 +70,15 @@ const useChats = () => {
 
       // sort chats
       const sortedChats = chatsWithMsgUpdate.sort((a, b) => {
-        const aDate = Date.parse(a.latestMessage.messageId.createdAt);
-        const bDate = Date.parse(b.latestMessage.messageId.createdAt);
+        const aLMsg = a.latestMessage;
+        const bLMsg = b.latestMessage;
+
+        // determines what to source if there's a new created chat
+        if (!aLMsg) return -1;
+        if (!bLMsg) return 1;
+
+        const aDate = Date.parse(aLMsg.messageId.createdAt);
+        const bDate = Date.parse(bLMsg.messageId.createdAt);
 
         console.log(aDate, bDate);
 

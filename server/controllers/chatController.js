@@ -26,30 +26,71 @@ const populateLMsgRef = [
 // createChat
 // regular chat (not a group chat)
 const createChat = async (req, res) => {
-  const { userIds } = req.body;
+  const { name, isGroupChat, members, groupChatAdmin } = req.body;
 
   try {
-    const admin = userIds[0];
-    const chat = await chatModel
-      .findOne({
-        members: { $all: userIds },
-      })
-      .populate(populateRef);
+    if (isGroupChat) {
+      console.log(
+        "create group chat:",
+        name,
+        isGroupChat,
+        members,
+        groupChatAdmin
+      );
+      // return if existing group is already exist
+      // no logic for this yet.
 
-    console.log("found chat:", chat);
+      if (!name) {
+        return res.status(401).json({ message: "Group chat name required" });
+      }
 
-    if (chat) return res.status(200).json(chat);
+      if (members.length < 3) {
+        return res
+          .status(401)
+          .json({ message: "Group chat required 3 members or more!" });
+      }
 
-    const newChat = new chatModel({
-      members: userIds,
-      groupChatAdmin: [admin],
-    });
+      if (groupChatAdmin.length < 1) {
+        return res
+          .status(401)
+          .json({ message: "Group chat required atleast 1 admin!" });
+      }
 
-    let response = await newChat.save();
-    response = await response.populate(populateRef);
-    console.log("create chat:", response);
+      const newChat = new chatModel({
+        name,
+        isGroupChat: true,
+        members: members,
+        groupChatAdmin: groupChatAdmin,
+      });
 
-    res.status(200).json(response);
+      let response = await newChat.save();
+      response = await response.populate(populateRef);
+      console.log("create group chat:", response);
+
+      res.status(200).json(response);
+    } else {
+      const admin = members[0];
+      const chat = await chatModel
+        .findOne({
+          members: { $all: members },
+        })
+        .populate(populateRef);
+
+      console.log("found chat:", chat);
+
+      if (chat) return res.status(200).json(chat);
+
+      const newChat = new chatModel({
+        members: members,
+        groupChatAdmin: [admin],
+      });
+
+      let response = await newChat.save();
+      response = await response.populate(populateRef);
+      console.log("create chat:", response);
+
+      res.status(200).json(response);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json(error);

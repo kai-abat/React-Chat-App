@@ -178,6 +178,7 @@ body {
   }
 }
 
+.modal-confirm-dlg,
 .modal-chat-box {
   background: var(--main-bg-color);
 }
@@ -405,6 +406,7 @@ body {
   gap: 1.25rem;
 }
 
+.gc-member:hover,
 .search-result .user:hover {
   background-color: rgb(100, 100, 100);
   border-radius: 0.25rem;

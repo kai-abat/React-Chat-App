@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { Form, InputGroup, Stack } from "react-bootstrap";
+import { Button, Form, InputGroup, Stack } from "react-bootstrap";
 import useCreateGroupChatForm from "../../hook/useCreateGroupChatForm";
 import { UserModelType } from "../../types/dbModelTypes";
 import { SvgComponent } from "../svg/SvgComponent";
@@ -18,12 +18,18 @@ const CreateGroupChatForm = () => {
   } = useCreateGroupChatForm();
 
   const [keyword, setKeyword] = useState<string>("");
+  const [isSearchFocus, setIsSearchFocus] = useState(false);
   const searchUsers: UserModelType[] = [];
 
   const user = getUser();
   const userChats = getUserChats();
 
   if (user === "Not Authorized") return <p>{user}</p>;
+
+  const modifiedUser: UserModelType = {
+    ...user,
+    name: `${user.name} (You)`,
+  };
 
   const availableUsers = getAvailableUsersToChat(user, userChats);
 
@@ -56,6 +62,10 @@ const CreateGroupChatForm = () => {
     if (!checked) handleRemoveMember(user);
   };
 
+  const handleSearchFocus = (status: boolean) => {
+    setIsSearchFocus(status);
+  };
+
   return (
     <Form onSubmit={handleSubmit}>
       <Stack gap={3}>
@@ -65,20 +75,10 @@ const CreateGroupChatForm = () => {
           onChange={(e) => handleChangeName(e.target.value)}
           value={groupChatForm.name}
         />
-
+        {/* 
         <Stack className="gc-members">
-          <strong>Members</strong>
-          <Stack direction="horizontal">
-            <UserPreview user={user} />
-          </Stack>
-          {groupChatForm.members.map((member) => {
-            return (
-              <Stack direction="horizontal">
-                <UserPreview user={member} />
-              </Stack>
-            );
-          })}
-        </Stack>
+
+        </Stack> */}
 
         <Stack className="gc-search">
           <strong>Search</strong>
@@ -92,34 +92,73 @@ const CreateGroupChatForm = () => {
               aria-label="Search"
               ria-describedby="basic-addon1"
               onChange={(e) => setKeyword(e.target.value)}
+              onFocus={() => handleSearchFocus(true)}
             />
-          </InputGroup>
-          {/* user check box */}
-          {displayedUsers.map((user, index) => {
-            const isExist = groupChatForm.members.includes(user);
-            return (
-              <Form.Check
-                key={index}
-                type="checkbox"
-                id={`${user.name + index}`}
-                className="checkbox-user-preview"
+            <Button
+              variant="primary"
+              className=""
+              onClick={() => handleSearchFocus(false)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                className="bi bi-x-lg"
+                viewBox="0 0 16 16"
               >
-                <Form.Check.Input
-                  type="checkbox"
-                  // isValid
-                  className="this-checkbox"
-                  name={user._id}
-                  checked={isExist}
-                  onChange={(e) =>
-                    handleCheckUserSelect(e.target.checked, user)
-                  }
-                />
-                <Form.Check.Label>
-                  <UserPreview user={user} />
-                </Form.Check.Label>
-              </Form.Check>
-            );
-          })}
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+              </svg>
+            </Button>
+          </InputGroup>
+
+          {!isSearchFocus && (
+            <>
+              <strong>Members</strong>
+              <Stack direction="horizontal">
+                <UserPreview user={modifiedUser} />
+              </Stack>
+              {groupChatForm.members.map((member) => {
+                return (
+                  <Stack direction="horizontal" className="gc-member">
+                    <UserPreview user={member} />
+                  </Stack>
+                );
+              })}
+              <Button>Create</Button>
+            </>
+          )}
+
+          {isSearchFocus && (
+            <>
+              {/* user check box */}
+              {displayedUsers.map((user, index) => {
+                const isExist = groupChatForm.members.includes(user);
+                return (
+                  <Form.Check
+                    key={index}
+                    type="checkbox"
+                    id={`${user.name + index}`}
+                    className="checkbox-user-preview"
+                  >
+                    <Form.Check.Input
+                      type="checkbox"
+                      // isValid
+                      className="this-checkbox"
+                      name={user._id}
+                      checked={isExist}
+                      onChange={(e) =>
+                        handleCheckUserSelect(e.target.checked, user)
+                      }
+                    />
+                    <Form.Check.Label>
+                      <UserPreview user={user} />
+                    </Form.Check.Label>
+                  </Form.Check>
+                );
+              })}
+            </>
+          )}
         </Stack>
       </Stack>
     </Form>

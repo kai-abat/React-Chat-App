@@ -15,7 +15,7 @@ const OffCanvasMain = ({ show, handleClose, canvasType }: Props) => {
       </Offcanvas.Header>
       <Offcanvas.Body>
         {canvasType === "CREATE-GC" && <CreateGroupChatForm />}
-        {canvasType === "SEARCH" && <SearchUser />}
+        {canvasType === "SEARCH" && <SearchUser onCloseCanvas={handleClose} />}
       </Offcanvas.Body>
     </Offcanvas>
   );

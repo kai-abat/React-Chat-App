@@ -1,16 +1,31 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Col, Form, Row, Stack } from "react-bootstrap";
 import useSearchUser from "../../hook/useSearchUser";
 import { getAvailableUsersToChat } from "../../utls/helper";
 import UserPreview from "./UserPreview";
 import Loader from "../Loader";
+import ConfirmModal from "../ConfirmModal";
+import useConfirmModal from "../../hook/useConfirmModal";
+import { UserModelType } from "../../types/dbModelTypes";
 
-const SearchUser = () => {
-  const { getUser, getUserChats, handleSearchUser, isPending, usersFound } =
-    useSearchUser();
+type Props = {
+  onCloseCanvas: () => void;
+};
+const SearchUser = ({ onCloseCanvas }: Props) => {
+  const {
+    getUser,
+    getUserChats,
+    handleSearchUser,
+    handleCreateChat,
+    isPending,
+    usersFound,
+  } = useSearchUser();
   const [keywords, setKeywords] = useState<string>("");
   const user = getUser();
   const userChats = getUserChats();
+  const { isShow, isConfirm, handleShow, handleConfirm, handleCancel } =
+    useConfirmModal();
+  const [selectedUser, setSelectedUser] = useState<UserModelType | null>(null);
 
   if (user === "Not Authorized") return <p>{user}</p>;
 
@@ -27,6 +42,20 @@ const SearchUser = () => {
     e.preventDefault();
 
     handleSearchUser(keywords);
+  };
+
+  const handleSelectUser = (user: UserModelType) => {
+    setSelectedUser(user);
+    handleShow();
+  };
+
+  const handleCloseDialog = () => {
+    console.log("CONFIRM TO PROCEED?[T/F]: ", isConfirm);
+    if (isConfirm && selectedUser) {
+      console.log("SELECTED USER: ", selectedUser.name);
+      handleCreateChat(user, selectedUser);
+      onCloseCanvas();
+    }
   };
 
   return (
@@ -61,13 +90,26 @@ const SearchUser = () => {
           {!isPending &&
             usersNotInChat.map((user) => {
               return (
-                <Stack direction="horizontal" className="user">
+                <Stack
+                  key={user._id}
+                  direction="horizontal"
+                  className="user"
+                  onClick={() => handleSelectUser(user)}
+                >
                   <UserPreview user={user} />
                 </Stack>
               );
             })}
         </Row>
       </Form>
+      <ConfirmModal
+        isShow={isShow}
+        title="Creat Chat"
+        message={`Are you sure to create a chat with ${selectedUser?.name}?`}
+        handleCancel={handleCancel}
+        handleConfirm={handleConfirm}
+        handleCloseDialog={handleCloseDialog}
+      />
     </>
   );
 };
