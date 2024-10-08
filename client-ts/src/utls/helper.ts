@@ -35,3 +35,9 @@ export const getChatName = (
   if (!chatName) chatName = "No Name";
   return chatName;
 };
+
+export const truncateText = (text: string) => {
+  let shortText = text.substring(0, 20);
+  if (text.length > 20) shortText += "...";
+  return shortText;
+};

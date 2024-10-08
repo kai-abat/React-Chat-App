@@ -6,6 +6,7 @@ import useChatBox from "../../hook/useChatMessage";
 import Typing from "../lottie/Typing";
 import ChatBoxHeader from "./ChatBoxHeader";
 import { MessagesModelType } from "../../types/dbModelTypes";
+import ChatBoxLoader from "../placeholders/ChatBoxLoader";
 
 type Props = { showHeader?: boolean; showCloseButton?: boolean };
 
@@ -35,11 +36,7 @@ const ChatBox = ({ showHeader = true, showCloseButton = false }: Props) => {
   if (user === "Not Authorized" || currentChat === "Not Authorized") return;
 
   if (isFetchingMessages) {
-    return (
-      <Stack className="w-100">
-        <Typing />
-      </Stack>
-    );
+    return <ChatBoxLoader />;
   }
 
   const handleEnterKeyPress = (currentText: string) => {
