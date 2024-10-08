@@ -5,6 +5,7 @@ import { ChatV2Context } from "../../context/ChatV2Context";
 import ChatBox from "./ChatBox";
 import ChatBoxHeader from "./ChatBoxHeader";
 import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
+import { getChatName } from "../../utls/helper";
 
 const ModalChatBoxV2 = () => {
   const { user } = useContext(AuthContext);
@@ -16,7 +17,6 @@ const ModalChatBoxV2 = () => {
     isShowChatBox,
     updateCurrentChat,
   } = useContext(ChatV2Context);
-  const { recipientUser } = useFetchRecipientUser(currentChat, user);
 
   // side effect open/close chat box
   useEffect(() => {
@@ -24,7 +24,9 @@ const ModalChatBoxV2 = () => {
     onShowChatBox();
   }, [currentChat, onCloseChatBox, onShowChatBox]);
 
-  if (!user || !currentChat || !recipientUser) return;
+  if (!user || !currentChat) return;
+
+  const chatName = getChatName(user, currentChat);
 
   return (
     <Modal
@@ -34,7 +36,7 @@ const ModalChatBoxV2 = () => {
       fullscreen="lg-down"
     >
       <Modal.Header>
-        <ChatBoxHeader name={recipientUser.name} showCloseButton={true} />
+        <ChatBoxHeader name={chatName} showCloseButton={true} />
       </Modal.Header>
       <Modal.Body>
         <ChatBox showHeader={false} />

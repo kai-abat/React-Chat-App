@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef } from "react";
 import { ChatV2Context } from "../context/ChatV2Context";
 import { getChatMessage, sendTextMessage } from "../services/chatService";
 import { AuthContext } from "../context/AuthContext";
+import { getChatName } from "../utls/helper";
 
 const useChatBox = () => {
   const queryClient = useQueryClient();
@@ -56,12 +57,7 @@ const useChatBox = () => {
     setCurrentMessages(chatMessages);
   }, [chatMessages, setCurrentMessages]);
 
-  const chatName = currentChat?.isGroupChat
-    ? currentChat.name
-    : currentChat?.members
-        .filter((m) => m._id !== user?._id)
-        .map((c) => c.name)
-        .join(", ");
+  const chatName = getChatName(user, currentChat);
 
   // Chatbox functionality
   const sendingTextMessage = (text: string) => {

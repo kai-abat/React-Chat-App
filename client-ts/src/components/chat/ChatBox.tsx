@@ -5,6 +5,7 @@ import InputEmoji from "react-input-emoji";
 import useChatBox from "../../hook/useChatMessage";
 import Typing from "../lottie/Typing";
 import ChatBoxHeader from "./ChatBoxHeader";
+import { MessagesModelType } from "../../types/dbModelTypes";
 
 type Props = { showHeader?: boolean; showCloseButton?: boolean };
 
@@ -52,6 +53,44 @@ const ChatBox = ({ showHeader = true, showCloseButton = false }: Props) => {
     showUserIsTyping();
   };
 
+  const setupMessages = (messages: MessagesModelType[]) => {
+    // let newMessages = messages.slice();
+    const newMessages: MessagesModelType[] = [];
+    let newSender = true;
+    let prevSender = "";
+
+    messages.forEach((message) => {
+      if (user._id !== message.senderId._id) {
+        if (message.senderId._id !== prevSender) {
+          newSender = true;
+        }
+        if (newSender) {
+          newMessages.push({
+            ...message,
+            text: "show user",
+            createdAt: "",
+          });
+          newMessages.push(message);
+
+          prevSender = message.senderId._id;
+          newSender = false;
+        } else {
+          newMessages.push(message);
+        }
+      } else {
+        prevSender = user._id;
+        newMessages.push(message);
+      }
+    });
+
+    return newMessages;
+  };
+
+  let newMessages = messages.slice();
+  if (currentChat.isGroupChat) {
+    newMessages = setupMessages(messages);
+  }
+
   return (
     <Stack gap={4} className="chat-box">
       {showHeader && (
@@ -61,9 +100,21 @@ const ChatBox = ({ showHeader = true, showCloseButton = false }: Props) => {
         />
       )}
       <Stack gap={3} className="messages">
-        {messages &&
-          messages.length > 0 &&
-          messages.map((message, index) => {
+        {newMessages &&
+          newMessages.length > 0 &&
+          newMessages.map((message, index) => {
+            // Show sender name
+            if (message.text === "show user" && !message.createdAt) {
+              return (
+                <Stack
+                  key={index}
+                  className="message-user-info align-self-start flex-grow-0 "
+                >
+                  <p>{message.senderId.name}</p>
+                </Stack>
+              );
+            }
+            // Default message display in chatbox
             return (
               <Stack
                 key={index}
