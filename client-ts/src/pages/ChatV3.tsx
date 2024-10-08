@@ -6,12 +6,14 @@ import NavChat from "../components/chat/NavChat";
 import Layout from "../components/common/Layout";
 import OffCanvasMain from "../components/common/OffCanvasMain";
 import { ChatV2Context } from "../context/ChatV2Context";
-import useNavChat from "../hook/useNavChat";
 import useWindowDimensions from "../hook/useWindowDimensions";
+import { useNavigate } from "react-router-dom";
+import useNavChat from "../hook/useNavChat";
 
 // Version 3
 const ChatV3 = () => {
   // Custom hook of Chat
+  const navigate = useNavigate();
   const { getUser, getUserChats } = useContext(ChatV2Context);
   const { showChatOffCanvas, canvasType, handleOffCanvasClose } = useNavChat();
   const dimensions = useWindowDimensions();
@@ -19,7 +21,7 @@ const ChatV3 = () => {
   const user = getUser();
   const userChats = getUserChats();
 
-  if (user === "Not Authorized") return <p>No user is currently logged in!</p>;
+  if (user === "Not Authorized") navigate("/login");
 
   return (
     <>

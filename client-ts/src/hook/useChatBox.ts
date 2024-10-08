@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext, useEffect, useRef } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { ChatV2Context } from "../context/ChatV2Context";
 import { getChatMessage, sendTextMessage } from "../services/chatService";
-import { AuthContext } from "../context/AuthContext";
 import { getChatName } from "../utls/helper";
+import useCheckAuthorized from "./useCheckAuthorized";
 
 const useChatBox = () => {
   const queryClient = useQueryClient();
@@ -25,6 +26,7 @@ const useChatBox = () => {
     getUser,
   } = useContext(ChatV2Context);
   const messageToScrollRef = useRef<null | HTMLDivElement>(null);
+  const { handleCheckAuthorization } = useCheckAuthorized();
 
   const {
     data: chatMessages,
@@ -34,6 +36,10 @@ const useChatBox = () => {
     queryKey: ["Current_Chat_Messages", currentChat?._id],
     queryFn: () => getChatMessage(currentChat?._id, messageURI),
   });
+
+  if (!isFetchingMessages && error) {
+    handleCheckAuthorization(error);
+  }
 
   const { mutate: sendTextMessageMutate } = useMutation({
     mutationFn: sendTextMessage,

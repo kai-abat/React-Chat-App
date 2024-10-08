@@ -2,9 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { getUserAuth } from "../services/userService";
+import useCheckAuthorized from "./useCheckAuthorized";
 
 const useUserAuth = () => {
-  const { usersURI } = useContext(AuthContext);
+  const { usersURI, logout } = useContext(AuthContext);
+  const { handleCheckAuthorization } = useCheckAuthorized();
+  // const queryClient = useQueryClient();
 
   const {
     data: userAuth,
@@ -18,6 +21,11 @@ const useUserAuth = () => {
     // enabled: false,
   });
 
+  if (!isFetchingUserAuth && authError) {
+    console.log("useUserAuth:", authError);
+    handleCheckAuthorization(authError);
+  }
+
   const handleUserAuth = async () => {
     return await getUserAuth(usersURI);
   };
@@ -27,6 +35,7 @@ const useUserAuth = () => {
     authError,
     isFetchingUserAuth,
     handleUserAuth,
+    logout,
   };
 };
 

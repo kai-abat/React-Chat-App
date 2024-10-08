@@ -2,7 +2,7 @@ import moment from "moment";
 import { useRef } from "react";
 import { Stack } from "react-bootstrap";
 import InputEmoji from "react-input-emoji";
-import useChatBox from "../../hook/useChatMessage";
+import useChatBox from "../../hook/useChatBox";
 import Typing from "../lottie/Typing";
 import ChatBoxHeader from "./ChatBoxHeader";
 import { MessagesModelType } from "../../types/dbModelTypes";

@@ -41,3 +41,7 @@ export const truncateText = (text: string) => {
   if (text.length > 20) shortText += "...";
   return shortText;
 };
+
+export const isNotAuthorized = (errMsg: string): boolean => {
+  return errMsg.toLowerCase().startsWith("not authorized") ? true : false;
+};
