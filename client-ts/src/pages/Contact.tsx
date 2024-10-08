@@ -1,4 +1,4 @@
-import Layout from "../components/Layout";
+import Layout from "../components/common/Layout";
 
 const Contact = () => {
   return <Layout.Content>Contact Page</Layout.Content>;

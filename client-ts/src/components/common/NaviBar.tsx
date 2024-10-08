@@ -1,14 +1,13 @@
 import { useContext } from "react";
 import { Container, Nav, Navbar, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import Notification from "./chat/Notification";
+import { AuthContext } from "../../context/AuthContext";
+import Notification from "../chat/Notification";
 
 const NaviBar = () => {
   const { user, logout } = useContext(AuthContext);
   return (
     <Navbar
-      bg="dark"
       className=""
       style={{
         height: "3.75rem",
@@ -20,11 +19,7 @@ const NaviBar = () => {
             GCHAT
           </Link>
         </h2>
-        {user && (
-          <span className="text-warning">
-            Welcome, {user.name}. {user._id}
-          </span>
-        )}
+        {user && <span className="text-warning">User: {user.name}</span>}
         {!user && <span className="text-warning">Please login</span>}
 
         <Nav>

@@ -9,6 +9,7 @@ import SearchUser from "../components/chat/SearchUser";
 import UserChatV2 from "../components/chat/UserChatV2";
 import useWindowDimensions from "../hook/useWindowDimensions";
 
+// Version 1
 const Chat = () => {
   const { user } = useContext(AuthContext);
   const { userChats, isUserChatsLoading } = useContext(ChatContext);

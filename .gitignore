@@ -31,3 +31,4 @@ dist-ssr
 client-ts/src/pages/Chat2.tsx
 client-ts/src/router/nav.ts
 client-ts/src/context/ContextBoilder.tsx
+client-ts/src/pages/TestPage.tsx

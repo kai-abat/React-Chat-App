@@ -2,30 +2,42 @@ import moment from "moment";
 import { useContext } from "react";
 import { Stack } from "react-bootstrap";
 import avatar from "../../assets/avatar.svg";
-import { ChatContext } from "../../context/ChatContext";
-import { useFetchLatestMessage } from "../../hook/useFetchLatestMessage";
-import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { ChatInfoType } from "../../types/ChatTypes";
-import { UserInfoType } from "../../types/UserTypes";
+import { ChatV2Context } from "../../context/ChatV2Context";
+import { ChatsWithMsgModelType, UserModelType } from "../../types/dbModelTypes";
 
 // Component that display the user's with chat history
-const UserChatV2 = ({
-  chat,
+const UserChatV3 = ({
+  chatWithMsg,
   user,
+  isActive = false,
 }: {
-  chat: ChatInfoType;
-  user: UserInfoType;
+  chatWithMsg: ChatsWithMsgModelType;
+  user: UserModelType;
+  isActive?: boolean;
 }) => {
-  const {
-    onlineUsers,
-    notifications,
-    updateCurrentChat,
-    markAsReadThisNotification,
-  } = useContext(ChatContext);
-  const { recipientUser } = useFetchRecipientUser(chat, user);
-  const { latestMessage } = useFetchLatestMessage(chat);
+  // const { onlineUsers, notifications } = useContext(ChatContext);
 
-  const isOnline = onlineUsers.some(
+  const { chat, latestMessage } = chatWithMsg;
+
+  const {
+    updateCurrentChat,
+    notifications,
+    handleOnClickNotification,
+    onShowChatBox,
+  } = useContext(ChatV2Context);
+
+  // const { latestMessage } = useFetchLatestMessage(chat);
+
+  const isOnline = false;
+  const numberOfNotification = 0;
+
+  let chatName = chat.isGroupChat
+    ? chat.name
+    : chat.members.find((m) => m._id !== user?._id)?.name;
+
+  if (!chatName) chatName = "No Name Found";
+
+  /*   const isOnline = onlineUsers.some(
     (olUser) => olUser.user._id === recipientUser?._id
   );
 
@@ -33,13 +45,20 @@ const UserChatV2 = ({
     (n) => n.senderId._id === recipientUser?._id && n.isRead === false
   );
 
-  const numberOfNotification = recipientNotification.length;
+  const numberOfNotification = recipientNotification.length; */
 
   const handleClickChat = () => {
-    updateCurrentChat(chat);
-    if (recipientUser) {
-      markAsReadThisNotification(recipientUser);
+    // if (recipientUser) {
+    //   markAsReadThisNotification(recipientUser);
+    // }
+    const notification = notifications.find(
+      (n) => n.message.chatId._id === chat._id
+    );
+    if (notification) {
+      handleOnClickNotification(notification);
     }
+    updateCurrentChat(chat);
+    onShowChatBox();
   };
 
   const truncateText = (text: string) => {
@@ -52,7 +71,8 @@ const UserChatV2 = ({
     <Stack
       direction="horizontal"
       gap={3}
-      className="user-card align-items-center p-2 justify-content-between"
+      // className="user-card align-items-center p-2 justify-content-between"
+      className={`user-card ${isActive && "active"}`}
       role="button"
       onClick={handleClickChat}
     >
@@ -67,10 +87,10 @@ const UserChatV2 = ({
       <div className="content">
         {/* name, text msg */}
         <div className="text-content">
-          <div className="name">{recipientUser?.name}</div>
+          <div className="name">{chatName}</div>
           <div className="text">
-            {latestMessage?.text && (
-              <span>{truncateText(latestMessage.text)}</span>
+            {latestMessage?.messageId.text && (
+              <span>{truncateText(latestMessage.messageId.text)}</span>
             )}
           </div>
         </div>
@@ -78,7 +98,7 @@ const UserChatV2 = ({
         {/* date, notification */}
         <div className="d-flex flex-column align-items-end">
           <div className="date">
-            {moment(latestMessage?.createdAt)
+            {moment(latestMessage?.messageId.createdAt)
               .calendar()
               .replace(/at /g, "at\n")}
           </div>
@@ -94,4 +114,4 @@ const UserChatV2 = ({
     </Stack>
   );
 };
-export default UserChatV2;
+export default UserChatV3;

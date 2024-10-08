@@ -1,14 +1,6 @@
 const userModel = require("../models/userModel");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const validator = require("validator");
-
-// jwt
-const createToken = (_id) => {
-  const jwtKey = process.env.JWT_SECRET_KEY;
-
-  return jwt.sign({ _id }, jwtKey, { expiresIn: "3d" });
-};
+const { hashPassword, generateToken, matchPassword } = require("../auth/auth");
 
 const registerUser = async (req, res) => {
   try {
@@ -35,15 +27,21 @@ const registerUser = async (req, res) => {
     user = new userModel({ name, email, password });
 
     // hash the password using bcrypt
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
+    user.password = await hashPassword(user.password);
 
     await user.save();
 
     // generate jwt token
-    const token = createToken(user._id);
+    const token = generateToken(user);
 
-    res.status(200).json({ _id: user._id, name, email, token });
+    res.status(200).json({
+      _id: user._id,
+      name,
+      email,
+      token,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -53,6 +51,8 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    console.log("Server Login:", email, password);
     let user = await userModel.findOne({ email });
     if (!user)
       return res
@@ -65,12 +65,21 @@ const loginUser = async (req, res) => {
             ":PW"
         );
 
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await matchPassword(password, user.password);
     if (!isValidPassword) res.status(400).json("Invalid email or password2...");
 
-    const token = createToken(user._id);
+    const token = generateToken(user);
 
-    res.status(200).json({ _id: user._id, name: user.name, email, token });
+    console.log("LOGIN:", user);
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email,
+      token,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -100,6 +109,7 @@ const getUsers = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
+    console.log("searchUsers: keyword:", req.query.keyword);
     const keyword = req.query.keyword
       ? {
           $or: [
@@ -111,8 +121,22 @@ const searchUsers = async (req, res) => {
 
     const users = await userModel
       .find(keyword)
-      .find({ _id: { $ne: req.user._id } });
+      .find({ _id: { $ne: req.user._id } })
+      .select("-password");
+
+    console.log("search users result:", users);
     res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error.message);
+  }
+};
+
+const getAuthUserInfo = async (req, res) => {
+  try {
+    console.log("getAuthUserInfo...");
+    console.log("getAuthUserInfo: req.user:", req.user);
+    res.status(200).json(req.user);
   } catch (error) {
     console.error(error);
     res.status(500).json(error);
@@ -125,4 +149,5 @@ module.exports = {
   findUser,
   getUsers,
   searchUsers,
+  getAuthUserInfo,
 };

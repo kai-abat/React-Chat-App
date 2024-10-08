@@ -1,24 +1,66 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Col, Form, Row } from "react-bootstrap";
-import SearchChatModal from "./SearchChatModal";
+import { Col, Form, Row, Stack } from "react-bootstrap";
+import useSearchUser from "../../hook/useSearchUser";
+import { getAvailableUsersToChat } from "../../utls/helper";
+import UserPreview from "./UserPreview";
+import Loader from "../common/Loader";
+import ConfirmModal from "../common/ConfirmModal";
+import useConfirmModal from "../../hook/useConfirmModal";
+import { UserModelType } from "../../types/dbModelTypes";
 
-const SearchUser = () => {
+type Props = {
+  onCloseCanvas: () => void;
+};
+const SearchUser = ({ onCloseCanvas }: Props) => {
+  const {
+    getUser,
+    getUserChats,
+    handleSearchUser,
+    handleCreateChat,
+    isPending,
+    usersFound,
+  } = useSearchUser();
   const [keywords, setKeywords] = useState<string>("");
-  const [isShowResultsModal, setIsShowResultsModal] = useState<boolean>(false);
+  const user = getUser();
+  const userChats = getUserChats();
+  const { isShow, isConfirm, handleShow, handleConfirm, handleCancel } =
+    useConfirmModal();
+  const [selectedUser, setSelectedUser] = useState<UserModelType | null>(null);
 
-  useEffect(() => {
-    if (!isShowResultsModal) {
-      setKeywords("");
-    }
-  }, [isShowResultsModal]);
+  if (user === "Not Authorized") return <p>{user}</p>;
+
+  const usersFromChat = getAvailableUsersToChat(user, userChats);
+
+  const usersNotInChat = usersFound.filter((user) => {
+    const found = usersFromChat.find((c) => c._id === user._id);
+    if (found) {
+      return false;
+    } else return true;
+  });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsShowResultsModal(true);
+
+    handleSearchUser(keywords);
   };
+
+  const handleSelectUser = (user: UserModelType) => {
+    setSelectedUser(user);
+    handleShow();
+  };
+
+  const handleCloseDialog = () => {
+    console.log("CONFIRM TO PROCEED?[T/F]: ", isConfirm);
+    if (isConfirm && selectedUser) {
+      console.log("SELECTED USER: ", selectedUser.name);
+      handleCreateChat(user, selectedUser);
+      onCloseCanvas();
+    }
+  };
+
   return (
     <>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit} className="search-user-form">
         <Row className="search-box">
           <Col xs="auto" className="search-text ">
             <Form.Control
@@ -43,11 +85,30 @@ const SearchUser = () => {
             </button>
           </Col>
         </Row>
+        <Row className="search-result">
+          {isPending && <Loader />}
+          {!isPending &&
+            usersNotInChat.map((user) => {
+              return (
+                <Stack
+                  key={user._id}
+                  direction="horizontal"
+                  className="user"
+                  onClick={() => handleSelectUser(user)}
+                >
+                  <UserPreview user={user} />
+                </Stack>
+              );
+            })}
+        </Row>
       </Form>
-      <SearchChatModal
-        isShowResultsModal={isShowResultsModal}
-        setIsShowResultsModal={setIsShowResultsModal}
-        searchKeywords={keywords}
+      <ConfirmModal
+        isShow={isShow}
+        title="Create Chat"
+        message={`Are you sure to create a chat with ${selectedUser?.name}?`}
+        handleCancel={handleCancel}
+        handleConfirm={handleConfirm}
+        handleCloseDialog={handleCloseDialog}
       />
     </>
   );

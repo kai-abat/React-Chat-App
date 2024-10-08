@@ -1,9 +1,20 @@
 import { Button, Stack } from "react-bootstrap";
+import { SvgComponent } from "../svg/SvgComponent";
+import { CREATE_GC_PATH_SVG, SEARCH_PATH_SVG } from "../svg/SvgContants";
+import useNavChat from "../../hook/useNavChat";
 
 const NavChat = () => {
+  const { handleOffCanvasShow } = useNavChat();
   const width = 40;
+
   return (
-    <Stack gap={5}>
+    <Stack gap={3} className="chat-navbar">
+      <Button onClick={() => handleOffCanvasShow("SEARCH")}>
+        <SvgComponent width="1.5rem" path={SEARCH_PATH_SVG} />
+      </Button>
+      <Button onClick={() => handleOffCanvasShow("CREATE-GC")}>
+        <SvgComponent width="1.5rem" path={CREATE_GC_PATH_SVG} />
+      </Button>
       <Button variant="link">
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import Chat from "../pages/Chat";
+import Chat from "../pages/ChatV3";
 import NotFound from "../pages/NotFound";
 import Login from "../pages/Login";
-import LayoutMain from "../components/LayoutMain";
+import LayoutMain from "../components/common/LayoutMain";
 import Register from "../pages/Register";
 
 export const router = createBrowserRouter([

@@ -1,31 +1,32 @@
-import { useContext, useEffect } from "react";
+import { FormEvent, useContext } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import Layout from "../components/Layout";
+import Layout from "../components/common/Layout";
 import { AuthContext } from "../context/AuthContext";
+import useLoginUser from "../hook/useLoginUser";
 
 const Login = () => {
+  const { loginForm, updateLoginForm } = useContext(AuthContext);
+
   const {
-    user,
-    isLoading,
-    isLoginLoading,
-    loginForm,
-    updateLoginForm,
+    handleLogin,
     loginError,
-    login,
-  } = useContext(AuthContext);
-  const navigate = useNavigate();
+    loginPending: isLoginLoading,
+  } = useLoginUser();
 
-  useEffect(() => {
-    if (!isLoading && user) {
-      navigate("/");
-    }
-  }, [navigate, user, isLoading]);
+  // if (isFetchingUserAuth) return <Loader />;
 
-  if (isLoading) return <p>Loading Page...</p>;
+  const handleLoginForm = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleLogin(loginForm.email, loginForm.password);
+  };
+
+  const handleGuestLogin = () => {
+    handleLogin("john@gmail.com", "React@1234");
+  };
+
   return (
     <Layout.Content>
-      <Form onSubmit={login}>
+      <Form onSubmit={handleLoginForm}>
         <Row
           style={{
             height: "100dvh",
@@ -50,12 +51,22 @@ const Login = () => {
                   updateLoginForm({ ...loginForm, password: e.target.value })
                 }
               />
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" disabled={isLoginLoading}>
                 {isLoginLoading ? "Logging in..." : "Login"}
               </Button>
+              {!isLoginLoading && (
+                <Button
+                  variant="danger"
+                  type="button"
+                  onClick={handleGuestLogin}
+                  disabled={isLoginLoading}
+                >
+                  Login as Guest User
+                </Button>
+              )}
               {loginError && (
                 <Alert variant="danger">
-                  <p>{loginError}</p>
+                  <p>{loginError.message}</p>
                 </Alert>
               )}
             </Stack>
