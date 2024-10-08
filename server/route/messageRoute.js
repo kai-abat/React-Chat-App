@@ -4,13 +4,14 @@ const {
   getMessage,
   getLatestMessage,
 } = require("../controllers/messageController");
+const { protect } = require("../auth/auth");
 
 const router = express.Router();
 
-router.post("/", createMessage);
+router.route("/").post(protect, createMessage);
 
-router.get("/:chatId", getMessage);
+router.route("/:chatId").get(protect, getMessage);
 
-router.get("/latest/:chatId", getLatestMessage);
+router.route("/latest/:chatId").get(protect, getLatestMessage);
 
 module.exports = router;

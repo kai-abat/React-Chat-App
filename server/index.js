@@ -5,7 +5,6 @@ const userRoute = require("./route/userRoute");
 const chatRoute = require("./route/chatRoute");
 const messageRoute = require("./route/messageRoute");
 const path = require("path");
-const { protect } = require("./auth/auth");
 const { socketStart } = require("./socket/socketV2");
 
 require("dotenv").config(); // config env variables
@@ -25,7 +24,7 @@ app.use(express.json());
 app.use(cors());
 
 // middleware authorization
-app.use(protect);
+// app.use(protect);
 
 app.use("/api/users", userRoute);
 app.use("/api/chats", chatRoute);
@@ -36,6 +35,7 @@ app.use("/api/messages", messageRoute);
 const __dirname1 = path.resolve();
 
 if (process.env.NODE_ENV === "production") {
+  console.log("RUNNING ON PRODUCTION....");
   app.use(express.static(path.join(__dirname1, "/client-ts/dist")));
 
   app.get("*", (req, res) =>

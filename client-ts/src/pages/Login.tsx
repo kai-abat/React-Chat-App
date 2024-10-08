@@ -3,9 +3,16 @@ import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
 import Layout from "../components/common/Layout";
 import { AuthContext } from "../context/AuthContext";
 import useLoginUser from "../hook/useLoginUser";
+import useUserAuth from "../hook/useUserAuth";
+import Loader from "../components/common/Loader";
+import { useNavigate } from "react-router-dom";
+// import { UserModelType } from "../types/dbModelTypes";
 
 const Login = () => {
-  const { loginForm, updateLoginForm } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { loginForm, updateLoginForm, updateUser } = useContext(AuthContext);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [user, setUser] = useState<UserModelType | null>(null);
 
   const {
     handleLogin,
@@ -13,7 +20,14 @@ const Login = () => {
     loginPending: isLoginLoading,
   } = useLoginUser();
 
-  // if (isFetchingUserAuth) return <Loader />;
+  const { isFetchingUserAuth, userAuth } = useUserAuth();
+
+  if (!isFetchingUserAuth && userAuth) {
+    updateUser(userAuth);
+    navigate("/chat");
+  }
+
+  if (isFetchingUserAuth) return <Loader />;
 
   const handleLoginForm = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -23,6 +37,12 @@ const Login = () => {
   const handleGuestLogin = () => {
     handleLogin("john@gmail.com", "React@1234");
   };
+
+  if (!isLoginLoading) {
+    navigate("/chat");
+  }
+
+  // if (isFetchingUserAuth) return <Loader />;
 
   return (
     <Layout.Content>

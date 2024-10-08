@@ -4,15 +4,16 @@ const {
   findUserChats,
   findChat,
 } = require("../controllers/chatController");
+const { protect } = require("../auth/auth");
 const router = express.Router();
 
 // create chat
-router.post("/", createChat);
+router.route("/").post(protect, createChat);
 
 // get all chats
-router.get("/:userId", findUserChats);
+router.route("/:userId").get(protect, findUserChats);
 
 // get one chat
-router.get("/find/:firstId/:secondId", findChat);
+router.route("/find/:firstId/:secondId").get(protect, findChat);
 
 module.exports = router;

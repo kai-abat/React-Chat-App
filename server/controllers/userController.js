@@ -44,7 +44,7 @@ const registerUser = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -93,7 +93,7 @@ const findUser = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -103,7 +103,7 @@ const getUsers = async (req, res) => {
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -139,7 +139,7 @@ const getAuthUserInfo = async (req, res) => {
     res.status(200).json(req.user);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 

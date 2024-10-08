@@ -1,17 +1,14 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Col, Form, Row, Stack } from "react-bootstrap";
-import useSearchUser from "../../hook/useSearchUser";
-import { getAvailableUsersToChat } from "../../utls/helper";
-import UserPreview from "./UserPreview";
-import Loader from "../common/Loader";
-import ConfirmModal from "../common/ConfirmModal";
 import useConfirmModal from "../../hook/useConfirmModal";
+import useSearchUser from "../../hook/useSearchUser";
 import { UserModelType } from "../../types/dbModelTypes";
+import { getAvailableUsersToChat } from "../../utls/helper";
+import ConfirmModal from "../common/ConfirmModal";
+import Loader from "../common/Loader";
+import UserPreview from "./UserPreview";
 
-type Props = {
-  onCloseCanvas: () => void;
-};
-const SearchUser = ({ onCloseCanvas }: Props) => {
+const SearchUser = ({ onCloseCanvas }: { onCloseCanvas: () => void }) => {
   const {
     getUser,
     getUserChats,

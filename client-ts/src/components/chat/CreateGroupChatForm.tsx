@@ -10,11 +10,11 @@ import ErrorMessage from "../common/ErrorMessage";
 import ConfirmModal from "../common/ConfirmModal";
 import useConfirmModal from "../../hook/useConfirmModal";
 
-type Props = {
+const CreateGroupChatForm = ({
+  onCloseCanvas,
+}: {
   onCloseCanvas: () => void;
-};
-
-const CreateGroupChatForm = ({ onCloseCanvas }: Props) => {
+}) => {
   const {
     getUser,
     getUserChats,
@@ -77,7 +77,7 @@ const CreateGroupChatForm = ({ onCloseCanvas }: Props) => {
       members: [user, ...groupChatForm.members],
     };
     console.log(data);
-    // handleCreateGroupChat(data);
+    handleCreateGroupChat(data);
     onCloseCanvas();
   };
 

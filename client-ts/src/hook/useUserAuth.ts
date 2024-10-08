@@ -14,12 +14,19 @@ const useUserAuth = () => {
     queryKey: ["UserAuth"],
     queryFn: () => getUserAuth(usersURI),
     retry: false,
+    throwOnError: true,
+    // enabled: false,
   });
+
+  const handleUserAuth = async () => {
+    return await getUserAuth(usersURI);
+  };
 
   return {
     userAuth,
     authError,
     isFetchingUserAuth,
+    handleUserAuth,
   };
 };
 

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/userModel");
+// const asyncHandler = require("express-async-handler");
 
 const generateToken = (user) => {
   return jwt.sign({ user }, process.env.JWT_SECRET_KEY, {
@@ -28,10 +29,10 @@ const protect = async (req, res, next) => {
       return next();
     }
 
-    const authUrl = ["/api/users/login", "/api/users/register"];
+    const authUrl = ["/api/users/login", "/api/users/register", "/favicon.ico"];
 
     // console.log("middleware protect start...");
-    // console.log(req);
+    // console.log("middleware -> originalUrl: ", originalUrl);
 
     const headerAuth = req.headers.authorization;
     // console.log("headerAuth", headerAuth);
@@ -46,7 +47,11 @@ const protect = async (req, res, next) => {
     if (headerAuth && headerAuth.startsWith("Bearer")) {
       token = headerAuth.split(" ")[1];
       if (!token) {
-        throw new Error("Not authorized");
+        return res
+          .status(401)
+          .json({ message: "Not authorized - No token found" });
+        // res.status(401);
+        // throw new Error("Not authorized");
       }
       // console.log("token", token);
 
@@ -61,7 +66,11 @@ const protect = async (req, res, next) => {
       // console.log("token verify: ", authUser);
 
       if (!authUser) {
-        throw new Error("Not authorized");
+        return res
+          .status(401)
+          .json({ message: "Not authorized - Token expired." });
+        // res.status(401);
+        // throw new Error("Not authorized - Token expired.");
       }
 
       req.authUser = authUser;
@@ -77,9 +86,13 @@ const protect = async (req, res, next) => {
       return next();
     }
 
-    throw new Error("Not authorized");
+    return res.status(401).json({ message: "Not authorized - No token found" });
+    // res.status(401);
+    // throw new Error("Not authorized");
   } catch (error) {
-    res.status(401).json({ error: error.message });
+    res.status(500).json({ message: error.message });
+    // res.status(500);
+    // throw new Error(error.message);
   }
 };
 

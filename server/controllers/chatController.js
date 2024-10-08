@@ -93,7 +93,7 @@ const createChat = async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -120,7 +120,7 @@ const findUserChats = async (req, res) => {
     res.status(200).json(userChatsWithMsg);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -142,7 +142,7 @@ const findChat = async (req, res) => {
     res.status(200).json({ ...userChat, latestMsg });
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
