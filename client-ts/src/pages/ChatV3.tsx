@@ -1,27 +1,23 @@
-import { Stack } from "react-bootstrap";
+import { useContext } from "react";
 import ChatBox from "../components/chat/ChatBox";
+import ChatList from "../components/chat/ChatList";
 import ModalChatBoxV2 from "../components/chat/ModalChatBoxV2";
 import NavChat from "../components/chat/NavChat";
-import UserChatV3 from "../components/chat/UserChatV3";
 import Layout from "../components/common/Layout";
 import OffCanvasMain from "../components/common/OffCanvasMain";
-import Typing from "../components/lottie/Typing";
-import useChats from "../hook/useChats";
+import { ChatV2Context } from "../context/ChatV2Context";
 import useNavChat from "../hook/useNavChat";
 import useWindowDimensions from "../hook/useWindowDimensions";
 
 // Version 3
 const ChatV3 = () => {
   // Custom hook of Chat
-  const { isFetchingChats, getUser, getUserChats, getCurrentChat } = useChats();
+  const { getUser, getUserChats } = useContext(ChatV2Context);
   const { showChatOffCanvas, canvasType, handleOffCanvasClose } = useNavChat();
   const dimensions = useWindowDimensions();
 
   const user = getUser();
   const userChats = getUserChats();
-  const currentChat = getCurrentChat();
-  const currentChatId =
-    currentChat === "Not Authorized" ? null : currentChat._id;
 
   if (user === "Not Authorized") return <p>No user is currently logged in!</p>;
 
@@ -31,21 +27,7 @@ const ChatV3 = () => {
         <NavChat />
       </Layout.Content>
       <Layout.Content isGrow={false}>
-        {!userChats || userChats.length < 1 ? null : (
-          <Stack className="messages-box" gap={3}>
-            {isFetchingChats && <Typing />}
-            {userChats.map((chat, index) => {
-              return (
-                <UserChatV3
-                  key={index}
-                  chatWithMsg={chat}
-                  user={user}
-                  isActive={chat.chat._id === currentChatId}
-                />
-              );
-            })}
-          </Stack>
-        )}
+        <ChatList />
       </Layout.Content>
 
       {!userChats || userChats.length < 1 ? null : (

@@ -166,6 +166,9 @@ body {
   width: 150px;
 }
 
+.user-card .text-sent {
+  width: 100px;
+}
 .user-card .name {
   font-weight: 700;
 }
@@ -546,4 +549,11 @@ body {
 
 .user-preview {
   width: 100%;
+}
+
+/* Placeholder classes */
+.dummy-text-content {
+  width: 200px;
+  height: 5rem;
+  /* background-color: purple; */
 }

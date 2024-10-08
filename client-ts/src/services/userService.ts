@@ -76,7 +76,7 @@ export const loginUser = async (args: LoginArgs): Promise<UserAuthType> => {
   const targetUrl = `${url}/login`;
   console.log("loginUser:", targetUrl, body);
 
-  await timeout(2000);
+  await timeout(1000);
 
   const response = await fetch(targetUrl, {
     method: "POST",
@@ -113,7 +113,7 @@ export const registerUser = async (
   const targetUrl = `${url}/register`;
   console.log("registerUser:", targetUrl, body);
 
-  await timeout(2000);
+  await timeout(1000);
 
   const response = await fetch(targetUrl, {
     method: "POST",

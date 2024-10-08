@@ -4,6 +4,7 @@ import { Stack } from "react-bootstrap";
 import avatar from "../../assets/avatar.svg";
 import { ChatV2Context } from "../../context/ChatV2Context";
 import { ChatsWithMsgModelType, UserModelType } from "../../types/dbModelTypes";
+import { truncateText } from "../../utls/helper";
 
 // Component that display the user's with chat history
 const UserChatV3 = ({
@@ -59,12 +60,6 @@ const UserChatV3 = ({
     }
     updateCurrentChat(chat);
     onShowChatBox();
-  };
-
-  const truncateText = (text: string) => {
-    let shortText = text.substring(0, 20);
-    if (text.length > 20) shortText += "...";
-    return shortText;
   };
 
   return (
