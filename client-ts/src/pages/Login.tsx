@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { loginForm, updateLoginForm, updateUser } = useContext(AuthContext);
+  const { loginForm, updateLoginForm } = useContext(AuthContext);
   // const [isLoading, setIsLoading] = useState(false);
   // const [user, setUser] = useState<UserModelType | null>(null);
 
@@ -23,7 +23,6 @@ const Login = () => {
   const { isFetchingUserAuth, userAuth } = useUserAuth();
 
   if (!isFetchingUserAuth && userAuth) {
-    updateUser(userAuth);
     navigate("/chat");
   }
 
@@ -37,10 +36,6 @@ const Login = () => {
   const handleGuestLogin = () => {
     handleLogin("john@gmail.com", "React@1234");
   };
-
-  if (!isLoginLoading) {
-    navigate("/chat");
-  }
 
   // if (isFetchingUserAuth) return <Loader />;
 

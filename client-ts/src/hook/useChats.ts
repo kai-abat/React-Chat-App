@@ -3,6 +3,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { ChatV2Context } from "../context/ChatV2Context";
 import { getUserChat } from "../services/chatService";
+import useCheckAuthorized from "./useCheckAuthorized";
 
 const useChats = () => {
   const { user } = useContext(AuthContext);
@@ -14,6 +15,7 @@ const useChats = () => {
     getCurrentChat,
     getUser,
   } = useContext(ChatV2Context);
+  const { handleCheckAuthorization } = useCheckAuthorized();
 
   const {
     data: chatsWithMsg,
@@ -23,6 +25,11 @@ const useChats = () => {
     queryKey: ["Chats"],
     queryFn: () => getUserChat(user?._id, chatURI),
   });
+
+  if (!isFetchingChats && error) {
+    console.log("useChats:", error);
+    handleCheckAuthorization(error);
+  }
 
   // setup user chat
   useEffect(() => {

@@ -1,35 +1,30 @@
-import { ReactNode, useContext } from "react";
+import { ReactNode, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/common/Loader";
 import { AuthContext } from "../context/AuthContext";
-import { ToasterContext } from "../context/ToasterContext";
+import { ChatV2Context } from "../context/ChatV2Context";
 import useUserAuth from "../hook/useUserAuth";
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
+  const { getUser } = useContext(ChatV2Context);
 
-  const { isFetchingUserAuth, userAuth } = useUserAuth();
-  const { showToaster } = useContext(ToasterContext);
+  const { isFetchingUserAuth, userAuth, logout } = useUserAuth();
+
   const { updateUser } = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   if (userAuth) updateUser(userAuth);
-  // }, [userAuth, updateUser]);
+  useEffect(() => {
+    const token = localStorage.getItem("Gchat_Token");
+    if (!token) navigate("/login");
+  }, [navigate]);
 
-  // useEffect(() => {
-  //   if (authError) {
-  //     console.log("Authorization Error: ", authError.message);
-  //   }
-  // }, [authError]);
-
-  if (!isFetchingUserAuth && !userAuth) {
-    console.log("user:", userAuth, isFetchingUserAuth);
-    showToaster(
-      "Not Authorized",
-      "You are not authorized to access this page, Please log in!"
-    );
-    navigate("/login");
-  }
+  useEffect(() => {
+    const user = getUser();
+    if (user === "Not Authorized") return;
+    if (!isFetchingUserAuth && !userAuth && user) {
+      logout();
+    }
+  }, [getUser, isFetchingUserAuth, userAuth, logout]);
 
   if (!isFetchingUserAuth && userAuth) {
     updateUser(userAuth);

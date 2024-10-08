@@ -32,7 +32,6 @@ function App() {
           <ChatV2ContextProvider>
             <BrowserRouter>
               <Routes>
-                <Route index element={<Navigate replace to="/login" />} />
                 <Route
                   element={
                     <ProtectedRoute>
@@ -40,11 +39,12 @@ function App() {
                     </ProtectedRoute>
                   }
                 >
+                  <Route index element={<Navigate replace to="/chat" />} />
                   <Route path="/chat" element={<ChatV3 />} />
-                </Route>
-                <Route element={<LayoutMain />}>
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
+                </Route>
+                <Route element={<LayoutMain />}>
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                 </Route>
