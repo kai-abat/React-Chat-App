@@ -1,23 +1,37 @@
 import { UserAuthType, UserModelType } from "../types/dbModelTypes";
 import { timeout } from "../utls/helper";
 
-export const getUserAuth = async (url: string): Promise<UserModelType> => {
+export const getUserAuth = async (
+  url: string
+): Promise<UserModelType | null> => {
   console.log("Executing service getUserAuth....");
-  const token = localStorage.getItem("Gchat_Token");
 
-  const response = await fetch(`${url}/auth`, {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  });
-  const data = await response.json();
+  try {
+    const token = localStorage.getItem("Gchat_Token");
+    console.log("getUserAuth fetching data............");
+    const response = await fetch(`${url}/auth`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    });
+    console.log("getUserAuth finished fetching data............");
+    const data = await response.json();
 
-  if (!response.ok) {
-    throw new Error(data.message);
+    if (!response.ok) {
+      console.log(
+        `getUserAuth status is ERROR, error message is ${data.message} with status code ${response.status}`
+      );
+    } else {
+      console.log(
+        `getUserAuth status is OK, data is ${data} with status code ${response.status}`
+      );
+      return data;
+    }
+  } catch (error) {
+    console.log(`catch getUserAuth THROW ERROR: ${error}`);
   }
-
-  return data;
+  return null;
 };
 
 type SearchArgs = {

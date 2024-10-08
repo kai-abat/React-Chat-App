@@ -1,16 +1,21 @@
-import { FormEvent, useContext, useEffect } from "react";
+import { FormEvent, useContext } from "react";
 import { Alert, Button, Col, Form, Row, Stack } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import Layout from "../components/common/Layout";
 import { AuthContext } from "../context/AuthContext";
-import useRegisterUser from "../hook/useRegisterUser";
 import { ToasterContext } from "../context/ToasterContext";
+import useRegisterUser from "../hook/useRegisterUser";
+import { useNavigate } from "react-router-dom";
+import useUserAuth from "../hook/useUserAuth";
+import Loader from "../components/common/Loader";
 
 const Register = () => {
-  const { registerForm, updateRegisterForm } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { registerForm, updateRegisterForm, updateUser } =
+    useContext(AuthContext);
   const { showToaster } = useContext(ToasterContext);
 
   const { handleRegister, registerError, registerPending } = useRegisterUser();
+  const { isFetchingUserAuth, userAuth } = useUserAuth();
 
   const toastTitle = "Registration Error";
 
@@ -28,6 +33,13 @@ const Register = () => {
       registerForm.password
     );
   };
+
+  if (!isFetchingUserAuth && userAuth) {
+    updateUser(userAuth);
+    navigate("/chat");
+  }
+
+  if (isFetchingUserAuth) return <Loader />;
 
   return (
     <Layout.Content>

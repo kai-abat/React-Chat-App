@@ -1,12 +1,11 @@
 import { Stack } from "react-bootstrap";
 import ChatBox from "../components/chat/ChatBox";
-import CreateGroupChatModal from "../components/chat/CreateGroupChatModal";
 import ModalChatBoxV2 from "../components/chat/ModalChatBoxV2";
 import NavChat from "../components/chat/NavChat";
 import UserChatV3 from "../components/chat/UserChatV3";
 import Layout from "../components/common/Layout";
-import Typing from "../components/lottie/Typing";
 import OffCanvasMain from "../components/common/OffCanvasMain";
+import Typing from "../components/lottie/Typing";
 import useChats from "../hook/useChats";
 import useNavChat from "../hook/useNavChat";
 import useWindowDimensions from "../hook/useWindowDimensions";
@@ -32,8 +31,6 @@ const ChatV3 = () => {
         <NavChat />
       </Layout.Content>
       <Layout.Content isGrow={false}>
-        {/* <ChatControls /> */}
-
         {!userChats || userChats.length < 1 ? null : (
           <Stack className="messages-box" gap={3}>
             {isFetchingChats && <Typing />}
@@ -63,7 +60,7 @@ const ChatV3 = () => {
       )}
 
       {/* Create Group Chat Modal */}
-      <CreateGroupChatModal />
+      {/* <CreateGroupChatModal /> */}
       <OffCanvasMain
         show={showChatOffCanvas}
         handleClose={handleOffCanvasClose}

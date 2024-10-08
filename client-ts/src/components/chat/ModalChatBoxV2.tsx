@@ -2,10 +2,9 @@ import { useContext, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatV2Context } from "../../context/ChatV2Context";
+import { getChatName } from "../../utls/helper";
 import ChatBox from "./ChatBox";
 import ChatBoxHeader from "./ChatBoxHeader";
-import { useFetchRecipientUser } from "../../hook/useFetchRecipientUser";
-import { getChatName } from "../../utls/helper";
 
 const ModalChatBoxV2 = () => {
   const { user } = useContext(AuthContext);

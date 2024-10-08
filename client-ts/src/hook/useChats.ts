@@ -34,7 +34,6 @@ const useChats = () => {
 
       if (isFetchingChats) return;
 
-      console.log("Getting user chats..........");
       console.log(chatsWithMsg);
 
       if (!chatsWithMsg) return;

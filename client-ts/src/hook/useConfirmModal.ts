@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const useConfirmModal = () => {
   const [isShow, setIsShow] = useState(false);

@@ -1,4 +1,4 @@
-import { ReactNode, useContext, useEffect } from "react";
+import { ReactNode, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/common/Loader";
 import { AuthContext } from "../context/AuthContext";
@@ -12,9 +12,15 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { showToaster } = useContext(ToasterContext);
   const { updateUser } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (userAuth) updateUser(userAuth);
-  }, [userAuth, updateUser]);
+  // useEffect(() => {
+  //   if (userAuth) updateUser(userAuth);
+  // }, [userAuth, updateUser]);
+
+  // useEffect(() => {
+  //   if (authError) {
+  //     console.log("Authorization Error: ", authError.message);
+  //   }
+  // }, [authError]);
 
   if (!isFetchingUserAuth && !userAuth) {
     console.log("user:", userAuth, isFetchingUserAuth);
@@ -23,6 +29,10 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
       "You are not authorized to access this page, Please log in!"
     );
     navigate("/login");
+  }
+
+  if (!isFetchingUserAuth && userAuth) {
+    updateUser(userAuth);
   }
 
   if (isFetchingUserAuth) return <Loader />;

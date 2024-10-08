@@ -64,7 +64,7 @@ const createMessage = async (req, res) => {
     res.status(200).json(saveMessage);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -77,7 +77,7 @@ const getMessage = async (req, res) => {
     res.status(200).json(messages);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -89,7 +89,7 @@ const getLatestMessage = async (req, res) => {
     res.status(200).json(latestMessage);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    res.status(500).json({ message: error.message });
   }
 };
 
