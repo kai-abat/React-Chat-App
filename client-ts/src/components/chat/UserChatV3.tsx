@@ -16,8 +16,6 @@ const UserChatV3 = ({
   user: UserModelType;
   isActive?: boolean;
 }) => {
-  // const { onlineUsers, notifications } = useContext(ChatContext);
-
   const { chat, latestMessage } = chatWithMsg;
 
   const {
@@ -26,8 +24,6 @@ const UserChatV3 = ({
     handleOnClickNotification,
     onShowChatBox,
   } = useContext(ChatV2Context);
-
-  // const { latestMessage } = useFetchLatestMessage(chat);
 
   const isOnline = false;
   const numberOfNotification = 0;
@@ -38,20 +34,7 @@ const UserChatV3 = ({
 
   if (!chatName) chatName = "No Name Found";
 
-  /*   const isOnline = onlineUsers.some(
-    (olUser) => olUser.user._id === recipientUser?._id
-  );
-
-  const recipientNotification = notifications.filter(
-    (n) => n.senderId._id === recipientUser?._id && n.isRead === false
-  );
-
-  const numberOfNotification = recipientNotification.length; */
-
   const handleClickChat = () => {
-    // if (recipientUser) {
-    //   markAsReadThisNotification(recipientUser);
-    // }
     const notification = notifications.find(
       (n) => n.message.chatId._id === chat._id
     );
